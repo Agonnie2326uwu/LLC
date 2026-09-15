@@ -42,8 +42,8 @@ SITE STRUCTURE (pages — separate .html files)
 TECHNICAL
 - Stack: plain HTML5, CSS3, and vanilla JavaScript. No frameworks, no build tools, no npm dependencies required.
 - Shared header/nav and footer, consistent across all pages, compatible with the page-transition system described above.
-- One main stylesheet (styles.css) using CSS custom properties (--color-primary, --color-accent, --color-silver, etc.) at the top so the palette and logo can be swapped in one place later.
-- JavaScript (script.js) handles: mobile nav toggle, form validation, smooth scroll for anchor links, the Intersection Observer scroll-reveal system, and the fetch-based page transition/router described above.
+- One main stylesheet (styles/main.css) using CSS custom properties (--color-primary, --color-accent, --color-silver, etc.) at the top so the palette and logo can be swapped in one place later.
+- JavaScript (scripts/main.js) handles: mobile nav toggle, form validation, smooth scroll for anchor links, the Intersection Observer scroll-reveal system, and the fetch-based page transition/router described above.
 - Semantic HTML and proper heading hierarchy for SEO/accessibility.
 - Basic on-page SEO: title tags and meta descriptions per page, with local SEO phrasing for "Orlando cleaning company," "post construction cleaning Orlando," etc. Note: since navigation is intercepted via JS, make sure each page is still a fully valid, independently crawlable HTML document (progressive enhancement — the site must work correctly with JS disabled, just without the fade transitions).
 - Since there's no backend, wire the quote/contact forms to a no-code form handler (e.g. Formspree) or a mailto fallback, and note this clearly in comments so it can be swapped for a real backend later.

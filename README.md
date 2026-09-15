@@ -13,14 +13,14 @@ clean/
 ├── services.html     — Full service breakdown (6 services with anchor IDs)
 ├── contact.html      — Contact form + info cards + map placeholder
 ├── quote.html        — Detailed quote form with conditional fields
-├── styles.css        — Complete design system (CSS custom properties)
-├── script.js         — All interactivity (nav, carousels, transitions, forms)
+├── styles/main.css        — Complete design system (CSS custom properties)
+├── scripts/main.js         — All interactivity (nav, carousels, transitions, forms)
 └── prompt.txt        — Original client brief
 ```
 
 ---
 
-## Design System (`styles.css`)
+## Design System (`styles/main.css`)
 
 ### Palette (CSS Custom Properties — swap in one place)
 ```css
@@ -87,7 +87,7 @@ clean/
 
 ---
 
-## JavaScript (`script.js`)
+## JavaScript (`scripts/main.js`)
 
 ### Mobile Nav
 - Hamburger toggle, click-outside-to-close, body scroll lock when open
