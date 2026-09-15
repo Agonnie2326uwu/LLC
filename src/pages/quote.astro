@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+---
+
+<BaseLayout
+  title="Request a Free Quote | Luxury Duo Cleaning LLC Orlando FL"
+  description="Get a free cleaning quote from Luxury Duo Cleaning LLC in Orlando FL. Construction, commercial, residential, Airbnb & deep cleaning — detailed estimates within hours."
+>
+  <Nav slot="nav" />
+
+  <PageHero
+    eyebrow="Free Quote"
+    title="Request a Free Quote"
+    lead="Tell us about your space and we'll get back to you with a detailed estimate within hours."
+  />
+
+  <section class="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20">
+    <div class="rounded-xl border border-line bg-white p-6 shadow-sm sm:p-10" data-reveal>
+      <QuoteForm />
+      <p class="mt-6 border-t border-line pt-5 text-center text-sm text-muted">
+        No obligation, no pressure. Your details stay private and are only used to prepare your estimate.
+      </p>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>

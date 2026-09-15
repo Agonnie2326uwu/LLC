@@ -1,0 +1,38 @@
+---
+interface Props {
+  title: string;
+  desc: string;
+  href: string;
+  imageSrc: string;
+  imageAlt: string;
+  flagship?: boolean;
+}
+
+const { title, desc, href, imageSrc, imageAlt, flagship = false } = Astro.props;
+---
+
+<article
+  data-reveal
+  class={`relative flex flex-col overflow-hidden rounded-xl border bg-white shadow-sm transition-shadow hover:shadow-md ${flagship ? 'border-accent' : 'border-line'}`}
+>
+  {flagship && (
+    <span class="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
+      Most Requested
+    </span>
+  )}
+  <img
+    src={imageSrc}
+    alt={imageAlt}
+    loading="lazy"
+    width="600"
+    height="338"
+    class="aspect-video w-full object-cover"
+  />
+  <div class="flex flex-1 flex-col gap-2 p-6">
+    <h3 class="text-xl font-bold text-ink">{title}</h3>
+    <p class="flex-1 text-muted">{desc}</p>
+    <a href={href} class="mt-2 inline-flex items-center gap-1 font-semibold text-accent hover:text-accent-hover hover:underline">
+      Learn more <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</article>

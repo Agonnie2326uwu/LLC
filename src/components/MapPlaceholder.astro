@@ -1,0 +1,18 @@
+---
+interface Props {
+  title?: string;
+  text?: string;
+}
+
+const { title = 'Service Area Map', text = 'Google Maps — Orlando, FL service area' } = Astro.props;
+---
+
+<div class="rounded-xl border border-line bg-bg-alt p-8 text-center" data-reveal="scale">
+  <span class="draft-pill">DRAFT MAP</span>
+  <h3 class="mt-4 text-xl font-bold text-ink">{title}</h3>
+  <p class="mt-2 text-muted">{text}</p>
+  <svg class="mx-auto mt-6 h-12 w-12 text-silver" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+    <circle cx="12" cy="10" r="3" />
+  </svg>
+</div>

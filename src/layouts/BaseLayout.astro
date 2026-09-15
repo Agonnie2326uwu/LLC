@@ -1,0 +1,56 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+}
+const { title, description, canonical } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'https://iskatiboi.github.io').toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  </head>
+  <body>
+    <slot name="nav" />
+    <main id="main">
+      <slot />
+    </main>
+    <slot name="footer" />
+    <script>
+      // Scroll reveal (Island-free, tiny inline enhancer)
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce && 'IntersectionObserver' in window) {
+        const els = document.querySelectorAll('[data-reveal]');
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                const el = e.target as HTMLElement;
+                const delay = el.getAttribute('data-reveal-delay');
+                if (delay) el.style.transitionDelay = `${Number(delay) * 80}ms`;
+                el.classList.add('is-visible');
+                io.unobserve(el);
+              }
+            }
+          },
+          { threshold: 0.12 }
+        );
+        els.forEach((el) => io.observe(el));
+      } else {
+        document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-visible'));
+      }
+    </script>
+  </body>
+</html>

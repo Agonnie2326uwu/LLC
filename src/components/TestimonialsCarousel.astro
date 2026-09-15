@@ -1,0 +1,93 @@
+---
+import { TESTIMONIALS } from '../lib/testimonials.ts';
+import TestimonialCard from './TestimonialCard.astro';
+
+const groups = [TESTIMONIALS.slice(0, 3), TESTIMONIALS.slice(3, 6)];
+---
+
+<div data-carousel="testimonials" class="flex items-stretch gap-2 sm:gap-4">
+  <button
+    type="button"
+    data-prev
+    aria-label="Previous reviews"
+    class="my-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-xl text-primary shadow-sm transition hover:bg-bg-alt focus-visible:outline-accent"
+  >
+    <span aria-hidden="true">←</span>
+  </button>
+
+  <div class="min-w-0 flex-1">
+    {groups.map((group, gi) => (
+      <div data-group={String(gi)} hidden={gi !== 0} class="grid gap-6 md:grid-cols-3">
+        {group.map((t) => (
+          <TestimonialCard quote={t.quote} name={t.name} role={t.role} initials={t.initials} />
+        ))}
+      </div>
+    ))}
+
+    <div class="mt-6 flex items-center justify-center gap-2">
+      {groups.map((_, gi) => (
+        <button
+          type="button"
+          data-dot={String(gi)}
+          aria-label={gi === 0 ? 'Show reviews 1-3' : 'Show reviews 4-6'}
+          aria-current={gi === 0 ? 'true' : undefined}
+          class={`h-3 w-3 rounded-full transition ${gi === 0 ? 'bg-primary' : 'bg-line hover:bg-silver'}`}
+        />
+      ))}
+    </div>
+    <p data-status class="sr-only" aria-live="polite">Showing reviews 1–3 of 6</p>
+  </div>
+
+  <button
+    type="button"
+    data-next
+    aria-label="Next reviews"
+    class="my-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-xl text-primary shadow-sm transition hover:bg-bg-alt focus-visible:outline-accent"
+  >
+    <span aria-hidden="true">→</span>
+  </button>
+</div>
+
+<script>
+  const roots = document.querySelectorAll('[data-carousel="testimonials"]');
+  roots.forEach((root) => {
+    const groups = Array.from(root.querySelectorAll('[data-group]'));
+    const dots = Array.from(root.querySelectorAll('[data-dot]'));
+    const prev = root.querySelector('[data-prev]');
+    const next = root.querySelector('[data-next]');
+    const status = root.querySelector('[data-status]');
+    const total = groups.length;
+    let index = 0;
+
+    const labels = ['Showing reviews 1–3 of 6', 'Showing reviews 4–6 of 6'];
+
+    function show(i) {
+      index = ((i % total) + total) % total;
+      groups.forEach((g, gi) => {
+        if (gi === index) g.removeAttribute('hidden');
+        else g.setAttribute('hidden', '');
+      });
+      dots.forEach((d, di) => {
+        const active = di === index;
+        if (active) d.setAttribute('aria-current', 'true');
+        else d.removeAttribute('aria-current');
+        d.classList.toggle('bg-primary', active);
+        d.classList.toggle('bg-line', !active);
+      });
+      if (status) status.textContent = labels[index] ?? `Showing group ${index + 1} of ${total}`;
+    }
+
+    prev?.addEventListener('click', () => show(index - 1));
+    next?.addEventListener('click', () => show(index + 1));
+    dots.forEach((d, di) => d.addEventListener('click', () => show(di)));
+    show(0);
+  });
+</script>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    [data-carousel="testimonials"] [data-group] {
+      transition: none !important;
+    }
+  }
+</style>

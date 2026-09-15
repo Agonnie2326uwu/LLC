@@ -1,0 +1,25 @@
+---
+interface Props {
+  slotId: string;
+  src: string;
+  alt: string;
+  aspect?: '16/9' | '4/3' | '1/1';
+  eager?: boolean;
+}
+
+const { slotId, src, alt, aspect = '16/9', eager = false } = Astro.props;
+---
+
+<div class="draft-slot w-full" style={`aspect-ratio: ${aspect}`}>
+  <img
+    src={src}
+    alt={alt}
+    loading={eager ? 'eager' : 'lazy'}
+    decoding="async"
+    class="absolute inset-0 h-full w-full object-cover"
+  />
+  <span class="draft-pill absolute left-3 top-3">DRAFT PHOTO</span>
+  <span class="absolute bottom-3 left-3 rounded-md bg-black/65 px-2.5 py-1 font-mono text-xs text-white">
+    {slotId}
+  </span>
+</div>

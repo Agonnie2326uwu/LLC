@@ -1,0 +1,239 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import TrustBar from '../components/TrustBar.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import TestimonialCard from '../components/TestimonialCard.astro';
+import ValueProp from '../components/ValueProp.astro';
+import ContactInfoCard from '../components/ContactInfoCard.astro';
+import Stat from '../components/Stat.astro';
+import ImageSlot from '../components/ImageSlot.astro';
+import MapPlaceholder from '../components/MapPlaceholder.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { link, PHONE_DISPLAY } from '../lib/site';
+
+const base = import.meta.env.BASE_URL;
+
+const swatches = [
+  { name: 'Primary', hex: '#16324F', cls: 'bg-primary', text: 'text-white' },
+  { name: 'Primary Light', hex: '#1D4168', cls: 'bg-primary-light', text: 'text-white' },
+  { name: 'Accent', hex: '#3E7CB1', cls: 'bg-accent', text: 'text-white' },
+  { name: 'Accent Hover', hex: '#346A99', cls: 'bg-accent-hover', text: 'text-white' },
+  { name: 'Silver', hex: '#C7CDD4', cls: 'bg-silver', text: 'text-ink' },
+  { name: 'Silver Light', hex: '#E8EAED', cls: 'bg-silver-light', text: 'text-ink' },
+  { name: 'BG Alt', hex: '#F5F7F9', cls: 'bg-bg-alt', text: 'text-ink' },
+  { name: 'Ink', hex: '#1A1A2E', cls: 'bg-ink', text: 'text-white' },
+  { name: 'Muted', hex: '#5A6270', cls: 'bg-muted', text: 'text-white' },
+  { name: 'Line', hex: '#D6DAE0', cls: 'bg-line', text: 'text-ink' },
+  { name: 'Footer', hex: '#0F2337', cls: 'bg-footer', text: 'text-white' },
+  { name: 'Star', hex: '#E8A817', cls: 'bg-star', text: 'text-ink' },
+];
+
+const swaps = [
+  { slot: 'logo.svg — LD monogram', draft: 'Draft SVG monogram + DRAFT LOGO pill', real: 'Real logo artwork' },
+  { slot: 'hero.svg', draft: 'Draft hero illustration', real: 'Commercial-space photo' },
+  { slot: 'construction.svg', draft: 'Draft job-site illustration', real: 'Job-site photo' },
+  { slot: 'commercial.svg', draft: 'Draft illustration', real: 'Real commercial photo' },
+  { slot: 'residential.svg', draft: 'Draft illustration', real: 'Real residential photo' },
+  { slot: 'airbnb.svg', draft: 'Draft illustration', real: 'Real rental photo' },
+  { slot: 'movein.svg', draft: 'Draft illustration', real: 'Real move-in/out photo' },
+  { slot: 'deep.svg', draft: 'Draft illustration', real: 'Real deep-clean photo' },
+  { slot: 'Testimonials', draft: 'Sample copy', real: 'Google reviews' },
+  { slot: 'Phone', draft: '(407) 555-1234 placeholder', real: 'Real phone number' },
+  { slot: 'Formspree', draft: 'Stub mode (no network)', real: 'Live endpoint' },
+  { slot: 'Map', draft: 'Draft map placeholder', real: 'Google Maps embed' },
+  { slot: 'Instagram', draft: '"#" placeholder link', real: 'Real Instagram URL' },
+];
+---
+
+<BaseLayout
+  title="Design System | Luxury Duo Cleaning LLC"
+  description="Internal style tile and component gallery for the Luxury Duo Cleaning marketing site. Not linked in navigation."
+>
+  <Nav slot="nav" />
+
+  <PageHero
+    eyebrow="Internal"
+    title="Design Tile & Component Gallery"
+    lead="Style reference for the preview build. This page is not linked in site navigation."
+  />
+
+  <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+    <section data-reveal>
+      <h2 class="text-2xl font-bold text-ink">Colors</h2>
+      <div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {swatches.map((s) => (
+          <div class="overflow-hidden rounded-xl border border-line">
+            <div class={`${s.cls} ${s.text} flex h-20 items-center justify-center font-mono text-sm font-bold`}>{s.hex}</div>
+            <div class="bg-white px-4 py-2 text-sm font-semibold text-ink">{s.name}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">Typography</h2>
+      <div class="mt-6 flex flex-col gap-5 rounded-xl border border-line bg-white p-8">
+        <div>
+          <span class="draft-pill">H1</span>
+          <p class="mt-2 text-4xl font-bold tracking-tight text-ink sm:text-5xl">Precision Cleaning. Zero Shortcuts.</p>
+        </div>
+        <div>
+          <span class="draft-pill">H2</span>
+          <p class="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">Why Choose Luxury Duo Cleaning</p>
+        </div>
+        <div>
+          <span class="draft-pill">H3</span>
+          <p class="mt-2 text-xl font-bold text-ink">Pre &amp; Post-Construction Cleaning</p>
+        </div>
+        <div>
+          <span class="draft-pill">Body</span>
+          <p class="mt-2 text-lg leading-relaxed text-muted">Reliable, detail-obsessed cleaning for contractors, commercial properties, and homes across the Orlando area.</p>
+        </div>
+        <div>
+          <span class="draft-pill">Eyebrow</span>
+          <p class="mt-2 text-xs font-bold uppercase tracking-[0.15em] text-accent">Orlando's Trusted Cleaning Partner</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">Buttons</h2>
+      <div class="mt-6 flex flex-col gap-6 rounded-xl border border-line bg-white p-8">
+        <div class="flex flex-wrap gap-4">
+          <Button href={link('/quote/')} variant="primary" size="md">Primary</Button>
+          <Button href={link('/quote/')} variant="secondary" size="md">Secondary</Button>
+          <Button href={link('/quote/')} variant="outline" size="md">Outline</Button>
+          <Button href={link('/quote/')} variant="dark" size="md">Dark</Button>
+        </div>
+        <div class="flex flex-wrap items-center gap-4">
+          <Button href={link('/quote/')} variant="primary" size="sm">Small</Button>
+          <Button href={link('/quote/')} variant="primary" size="md">Medium</Button>
+        </div>
+        <div>
+          <Button href={link('/quote/')} variant="primary" size="md" block>Block</Button>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">TrustBar</h2>
+      <div class="mt-6 overflow-hidden rounded-xl border border-line">
+        <TrustBar />
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">ServiceCard — Normal + Flagship</h2>
+      <div class="mt-6 grid gap-6 md:grid-cols-2">
+        <ServiceCard
+          title="Commercial Cleaning"
+          desc="Offices, retail spaces, warehouses, and facilities cleaned on your schedule."
+          href={`${base}services/#commercial`}
+          imageSrc={`${base}draft/commercial.svg`}
+          imageAlt="Commercial office cleaning sample"
+        />
+        <ServiceCard
+          title="Pre & Post-Construction Cleaning"
+          desc="Final-detail polish that gets your project signed off on the walkthrough."
+          href={`${base}services/#construction`}
+          imageSrc={`${base}draft/construction.svg`}
+          imageAlt="Post-construction cleaning sample"
+          flagship
+        />
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">TestimonialCard</h2>
+      <div class="mt-6 grid max-w-2xl gap-6">
+        <TestimonialCard
+          quote="We've used Luxury Duo for three post-construction cleanups now. They're fast, thorough, and always on schedule."
+          name="Jake Rivera"
+          role="Rivera General Contracting"
+          initials="JR"
+        />
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">ValueProp</h2>
+      <div class="mt-6 grid max-w-2xl gap-6">
+        <ValueProp icon="detail" title="Attention to Detail" text="Every corner, every surface, every edge." />
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">ContactInfoCard</h2>
+      <div class="mt-6 grid max-w-2xl gap-4">
+        <ContactInfoCard icon="phone" label="Phone" value={PHONE_DISPLAY} />
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">Stat</h2>
+      <div class="mt-6 grid max-w-xl grid-cols-3 gap-6 rounded-xl border border-line bg-bg-alt p-8">
+        <Stat value="100%" label="Licensed & Insured" />
+        <Stat value="24hr" label="Quote Turnaround" />
+        <Stat value="Orlando" label="Serving All Areas" />
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">ImageSlot</h2>
+      <div class="mt-6 max-w-2xl">
+        <ImageSlot slotId="sample-slot" src={`${base}draft/hero.svg`} alt="Sample draft image slot" aspect="16/9" />
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">MapPlaceholder</h2>
+      <div class="mt-6 max-w-3xl">
+        <MapPlaceholder />
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">CtaBand</h2>
+      <div class="mt-6 overflow-hidden rounded-xl">
+        <CtaBand
+          title="Sample CTA Band"
+          primaryHref={link('/quote/')}
+          primaryLabel="Request a Free Quote"
+          secondaryHref={link('/contact/')}
+          secondaryLabel="Talk to Us"
+        />
+      </div>
+    </section>
+
+    <section class="mt-14" data-reveal>
+      <h2 class="text-2xl font-bold text-ink">Placeholder Swap Table</h2>
+      <div class="mt-6 overflow-x-auto rounded-xl border border-line">
+        <table class="w-full min-w-[640px] border-collapse bg-white text-left text-sm">
+          <thead>
+            <tr class="bg-bg-alt text-xs uppercase tracking-wider text-muted">
+              <th class="border-b border-line px-4 py-3">Slot</th>
+              <th class="border-b border-line px-4 py-3">Draft Now</th>
+              <th class="border-b border-line px-4 py-3">Real Asset Needed</th>
+            </tr>
+          </thead>
+          <tbody>
+            {swaps.map((row) => (
+              <tr class="border-b border-line last:border-0">
+                <td class="px-4 py-3 font-mono text-xs font-semibold text-ink">{row.slot}</td>
+                <td class="px-4 py-3 text-muted">{row.draft}</td>
+                <td class="px-4 py-3 font-semibold text-ink">{row.real}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <Footer slot="footer" />
+</BaseLayout>

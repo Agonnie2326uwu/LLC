@@ -1,0 +1,292 @@
+---
+/* QuoteForm — STUB mode (no network). Real Formspree wired post-signoff. */
+const inputCls =
+  'w-full rounded-lg border border-line bg-white px-4 py-3 text-ink placeholder:text-muted/60 focus:border-accent focus:outline-none';
+const labelCls = 'mb-1 block text-sm font-semibold text-ink';
+const errorCls = 'mt-1 text-sm text-red-600';
+---
+
+<div data-reveal data-form-wrap="quote">
+  <form id="quote-form" novalidate class="flex flex-col gap-5">
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label class={labelCls} for="quote-name">Full Name *</label>
+        <input
+          class={inputCls}
+          type="text"
+          id="quote-name"
+          name="name"
+          placeholder="Your full name"
+          required
+          autocomplete="name"
+          aria-describedby="quote-name-error"
+        />
+        <p id="quote-name-error" class={errorCls} hidden>Please enter your name.</p>
+      </div>
+      <div>
+        <label class={labelCls} for="quote-phone">Phone Number *</label>
+        <input
+          class={inputCls}
+          type="tel"
+          id="quote-phone"
+          name="phone"
+          placeholder="(407) 555-1234"
+          required
+          autocomplete="tel"
+          aria-describedby="quote-phone-error"
+        />
+        <p id="quote-phone-error" class={errorCls} hidden>Please enter a valid phone number.</p>
+      </div>
+    </div>
+
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label class={labelCls} for="quote-email">Email Address *</label>
+        <input
+          class={inputCls}
+          type="email"
+          id="quote-email"
+          name="email"
+          placeholder="you@example.com"
+          required
+          autocomplete="email"
+          aria-describedby="quote-email-error"
+        />
+        <p id="quote-email-error" class={errorCls} hidden>Please enter a valid email.</p>
+      </div>
+      <div>
+        <label class={labelCls} for="quote-city">City / Area *</label>
+        <input
+          class={inputCls}
+          type="text"
+          id="quote-city"
+          name="city"
+          placeholder="e.g. Winter Park, Kissimmee"
+          required
+          autocomplete="address-level2"
+          aria-describedby="quote-city-error"
+        />
+        <p id="quote-city-error" class={errorCls} hidden>Please enter your city or area.</p>
+      </div>
+    </div>
+
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label class={labelCls} for="service-type">Service Needed *</label>
+        <select
+          class={inputCls}
+          id="service-type"
+          name="service"
+          required
+          aria-describedby="service-type-error"
+        >
+          <option value="" disabled selected>Select a service</option>
+          <option value="construction">Pre &amp; Post-Construction Cleaning</option>
+          <option value="commercial">Commercial Cleaning</option>
+          <option value="residential">Residential Cleaning</option>
+          <option value="airbnb">Airbnb / Vacation Rental Cleaning</option>
+          <option value="movein">Move-In / Move-Out Cleaning</option>
+          <option value="deep">Deep Cleaning</option>
+          <option value="other">Other / Not Sure</option>
+        </select>
+        <p id="service-type-error" class={errorCls} hidden>Please select a service.</p>
+      </div>
+      <div>
+        <label class={labelCls} for="property-type">Property Type *</label>
+        <select
+          class={inputCls}
+          id="property-type"
+          name="property"
+          required
+          aria-describedby="property-type-error"
+        >
+          <option value="" disabled selected>Select property type</option>
+          <option value="residential">Residential — House / Apartment</option>
+          <option value="commercial">Commercial — Office / Retail / Facility</option>
+          <option value="construction">Construction Site</option>
+          <option value="airbnb">Vacation Rental / Airbnb</option>
+        </select>
+        <p id="property-type-error" class={errorCls} hidden>Please select a property type.</p>
+      </div>
+    </div>
+
+    <div id="construction-fields" hidden>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label class={labelCls} for="square-footage">Approx. Square Footage</label>
+          <input
+            class={inputCls}
+            type="text"
+            id="square-footage"
+            name="square_footage"
+            placeholder="e.g. 2,500 sq ft"
+            autocomplete="off"
+          />
+        </div>
+        <div>
+          <label class={labelCls} for="project-date">Expected Completion Date</label>
+          <input class={inputCls} type="date" id="project-date" name="project_date" />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <label class={labelCls} for="quote-timeline">Preferred Timeline</label>
+      <select class={inputCls} id="quote-timeline" name="timeline">
+        <option value="" disabled selected>Select a timeline</option>
+        <option value="asap">As soon as possible</option>
+        <option value="1-week">Within 1 week</option>
+        <option value="2-weeks">Within 2 weeks</option>
+        <option value="1-month">Within 1 month</option>
+        <option value="flexible">Flexible / No rush</option>
+      </select>
+    </div>
+
+    <div>
+      <label class={labelCls} for="quote-details">Additional Details</label>
+      <textarea
+        class={inputCls}
+        id="quote-details"
+        name="details"
+        rows="5"
+        placeholder="Tell us more about your space, special requirements, or anything we should know..."
+      ></textarea>
+    </div>
+
+    <button
+      type="submit"
+      class="w-full rounded-lg bg-primary px-6 py-3 text-center font-semibold text-white transition hover:bg-primary-light"
+    >
+      Submit Quote Request
+    </button>
+    <p class="text-center text-sm text-muted">
+      We’ll review your request and respond with a detailed estimate within hours. No obligation, no pressure.
+    </p>
+  </form>
+
+  <div id="quote-success" hidden class="rounded-xl border border-line bg-bg-alt p-8 text-center" role="status">
+    <h3 class="text-2xl font-bold text-ink">Thanks — we got your request!</h3>
+    <p class="mx-auto mt-2 max-w-md text-muted">
+      Preview mode — not sending. Real Formspree wired post-signoff.
+    </p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const form = document.getElementById('quote-form');
+    if (!form) return;
+    const wrap = form.closest('[data-form-wrap="quote"]');
+    const success = wrap ? wrap.querySelector('#quote-success') : document.getElementById('quote-success');
+    const serviceSelect = document.getElementById('service-type');
+    const constructionFields = document.getElementById('construction-fields');
+
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const PHONE_RE = /^[+\d][\d\s().-]{5,}$/;
+
+    function isConstructionValue(v) {
+      return v === 'construction' || v === 'pre-post-construction';
+    }
+
+    function toggleConstruction() {
+      if (!serviceSelect || !constructionFields) return;
+      const val = serviceSelect.value;
+      if (isConstructionValue(val)) constructionFields.removeAttribute('hidden');
+      else constructionFields.setAttribute('hidden', '');
+    }
+
+    function setError(input, hasError) {
+      if (!input) return;
+      const err = document.getElementById(input.id + '-error');
+      input.setAttribute('aria-invalid', hasError ? 'true' : 'false');
+      input.classList.toggle('border-red-500', hasError);
+      if (err) {
+        if (hasError) err.removeAttribute('hidden');
+        else err.setAttribute('hidden', '');
+      }
+    }
+
+    function validateField(input) {
+      const val = input.value.trim();
+      const id = input.id;
+      if (id === 'quote-email') {
+        const bad = val === '' || !EMAIL_RE.test(val);
+        setError(input, bad);
+        return !bad;
+      }
+      if (id === 'quote-phone') {
+        const digits = val.replace(/\D/g, '');
+        const bad = val === '' || !PHONE_RE.test(val) || digits.length < 7;
+        setError(input, bad);
+        return !bad;
+      }
+      if (id === 'service-type' || id === 'property-type') {
+        const bad = val === '';
+        setError(input, bad);
+        return !bad;
+      }
+      const bad = val === '';
+      setError(input, bad);
+      return !bad;
+    }
+
+    // Honor ?service= query param to preselect
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const raw = (params.get('service') || '').toLowerCase().trim();
+      if (raw && serviceSelect) {
+        const alias = {
+          'pre-post-construction': 'construction',
+          'pre_post_construction': 'construction',
+          construction: 'construction',
+          commercial: 'commercial',
+          residential: 'residential',
+          airbnb: 'airbnb',
+          'move-in': 'movein',
+          move_in: 'movein',
+          movein: 'movein',
+          deep: 'deep',
+          other: 'other',
+        };
+        const mapped = alias[raw];
+        if (mapped) {
+          serviceSelect.value = mapped;
+        }
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    toggleConstruction();
+    serviceSelect?.addEventListener('change', toggleConstruction);
+
+    ['quote-name', 'quote-phone', 'quote-email', 'quote-city', 'service-type', 'property-type'].forEach((id) => {
+      const el = document.getElementById(id);
+      el?.addEventListener('input', () => setError(el, false));
+      el?.addEventListener('change', () => setError(el, false));
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const ids = ['quote-name', 'quote-phone', 'quote-email', 'quote-city', 'service-type', 'property-type'];
+      let firstInvalid = null;
+      ids.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const ok = validateField(el);
+        if (!ok && !firstInvalid) firstInvalid = el;
+      });
+      if (firstInvalid) {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        firstInvalid.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+        firstInvalid.focus({ preventScroll: true });
+        return;
+      }
+      // STUB mode: no network — show success panel
+      form.setAttribute('hidden', '');
+      if (success) {
+        success.removeAttribute('hidden');
+        success.scrollIntoView({ block: 'center' });
+      }
+    });
+  })();
+</script>

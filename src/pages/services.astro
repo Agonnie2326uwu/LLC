@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import ImageSlot from '../components/ImageSlot.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { link } from '../lib/site';
+import { SERVICES, FLAGSHIP_SLUG as FLAG } from '../lib/services';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Our Services | Luxury Duo Cleaning LLC Orlando FL"
+  description="Full-service cleaning in Orlando FL — pre & post-construction cleaning, commercial, residential, Airbnb, move-in/move-out & deep cleaning. Licensed & insured."
+>
+  <Nav slot="nav" />
+
+  <PageHero
+    eyebrow="What We Do"
+    title="Our Services"
+    lead="Comprehensive cleaning solutions for every type of property. Construction-ready precision for every job."
+  />
+
+  {SERVICES.map((service, i) => {
+    const flip = i % 2 === 1;
+    const isFlagship = service.slug === FLAG;
+    return (
+      <section id={service.slug} class:list={['scroll-mt-24', i % 2 === 1 ? 'bg-bg-alt' : 'bg-white']}>
+        <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
+          <div class="grid items-center gap-10 lg:grid-cols-2">
+            <div data-reveal class={flip ? 'lg:order-2' : ''}>
+              {isFlagship && (
+                <span class="text-xs font-bold uppercase tracking-[0.15em] text-accent">Flagship Service</span>
+              )}
+              {isFlagship && (
+                <div class="mt-2">
+                  <span class="draft-pill">Before/after pair slot reserved</span>
+                </div>
+              )}
+              <h2 class="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{service.title}</h2>
+              <p class="mt-4 text-lg leading-relaxed text-muted">{service.desc}</p>
+              <ul class="mt-6 space-y-3">
+                {service.bullets.map((b) => (
+                  <li class="flex items-start gap-3 text-ink">
+                    <svg class="mt-0.5 h-5 w-5 shrink-0 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+              <div class="mt-6">
+                <Button href={`${link('/quote/')}?service=${service.slug}`} variant="primary" size="sm">Get a Quote</Button>
+              </div>
+            </div>
+            <div data-reveal={flip ? 'left' : 'right'} class={flip ? 'lg:order-1' : ''}>
+              <ImageSlot
+                slotId={`${service.slug}-main`}
+                src={`${base}${service.image}`}
+                alt={service.imageAlt}
+                aspect="4/3"
+                eager={i === 0}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  })}
+
+  <section class="bg-white">
+    <div class="mx-auto max-w-4xl px-4 py-14 sm:px-6 sm:py-16">
+      <div data-reveal>
+        <h2 class="text-center text-3xl font-bold tracking-tight text-ink sm:text-4xl">Frequently Asked Questions</h2>
+        <p class="mt-3 text-center text-lg text-muted">Quick answers before you request a quote.</p>
+      </div>
+      <div class="mt-8 flex flex-col gap-4" data-reveal>
+        <details class="rounded-xl border border-line bg-white p-5 shadow-sm">
+          <summary class="cursor-pointer font-bold text-ink">What factors affect pricing?</summary>
+          <p class="mt-3 leading-relaxed text-muted">Property size and square footage, service type, condition of the space, frequency (one-time vs. recurring), and timeline. Every quote is itemized so you know exactly what you're paying for.</p>
+        </details>
+        <details class="rounded-xl border border-line bg-white p-5 shadow-sm">
+          <summary class="cursor-pointer font-bold text-ink">Do you bring your own supplies and equipment?</summary>
+          <p class="mt-3 leading-relaxed text-muted">Yes. We arrive fully equipped with professional-grade supplies and equipment for every job, including construction-grade vacuums, detailing tools, and eco-friendly products on request.</p>
+        </details>
+        <details class="rounded-xl border border-line bg-white p-5 shadow-sm">
+          <summary class="cursor-pointer font-bold text-ink">What if something is missed — do you offer re-cleans?</summary>
+          <p class="mt-3 leading-relaxed text-muted">Absolutely. If anything on the agreed scope or punch list isn't right, tell us within 48 hours and we'll come back and make it right at no charge.</p>
+        </details>
+        <details class="rounded-xl border border-line bg-white p-5 shadow-sm">
+          <summary class="cursor-pointer font-bold text-ink">Can you provide a COI for general contractors?</summary>
+          <p class="mt-3 leading-relaxed text-muted">Yes. We're licensed and insured and can provide a certificate of insurance (COI) naming your company or project as additionally insured on request.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Not Sure Which Service You Need?"
+    primaryHref={link('/quote/')}
+    primaryLabel="Request a Free Quote"
+    secondaryHref={link('/contact/')}
+    secondaryLabel="Talk to Us"
+  />
+
+  <Footer slot="footer" />
+</BaseLayout>

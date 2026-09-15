@@ -1,0 +1,149 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Stat from '../components/Stat.astro';
+import RoundCarousel from '../components/RoundCarousel.astro';
+import ImageSlot from '../components/ImageSlot.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { link } from '../lib/site';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="About Us | Luxury Duo Cleaning LLC Orlando FL"
+  description="Learn about Luxury Duo Cleaning LLC — Orlando's precision cleaning company. Our mission, values, and commitment to quality work across Central Florida."
+>
+  <Nav slot="nav" />
+
+  <PageHero
+    eyebrow="About Us"
+    title="Built on Precision. Driven by Results."
+    lead="Luxury Duo Cleaning LLC was founded in Orlando with one goal: to become the cleaning company that contractors, businesses, and homeowners actually trust."
+  />
+
+  <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <div class="grid items-center gap-10 lg:grid-cols-2">
+      <div data-reveal>
+        <h2 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Our Mission</h2>
+        <p class="mt-4 text-lg leading-relaxed text-muted">
+          To secure contracts, become a recognized name in the Orlando market,
+          and leave a mark through quality work. We're not here to be the
+          biggest — we're here to be the most reliable.
+        </p>
+        <p class="mt-4 leading-relaxed text-muted">
+          Every job we take is a chance to prove that a cleaning company can
+          operate with the same precision and professionalism as the
+          contractors and businesses it serves.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 gap-8 rounded-xl border border-line bg-bg-alt p-10 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3" data-reveal="right">
+        <Stat value="100%" label="Licensed & Insured" />
+        <Stat value="24hr" label="Quote Turnaround" />
+        <Stat value="Orlando" label="Serving All Areas" />
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-bg-alt">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <SectionHeader
+        title="What Sets Us Apart"
+        lead="Three principles that drive every job we take on."
+      />
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        <article class="rounded-xl border border-line bg-white p-6 shadow-sm" data-reveal>
+          <span class="flex h-12 w-12 items-center justify-center rounded-full bg-bg-alt text-accent" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+          </span>
+          <h3 class="mt-4 text-xl font-bold text-ink">Efficiency</h3>
+          <p class="mt-2 text-muted">We work fast without cutting corners. Contractor schedules don't wait, and neither do we. Every minute on-site is purposeful.</p>
+        </article>
+        <article class="rounded-xl border border-line bg-white p-6 shadow-sm" data-reveal>
+          <span class="flex h-12 w-12 items-center justify-center rounded-full bg-bg-alt text-accent" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </span>
+          <h3 class="mt-4 text-xl font-bold text-ink">Reliability</h3>
+          <p class="mt-2 text-muted">We show up when we say we will. Consistent scheduling, consistent quality, consistent communication. No surprises.</p>
+        </article>
+        <article class="rounded-xl border border-line bg-white p-6 shadow-sm" data-reveal>
+          <span class="flex h-12 w-12 items-center justify-center rounded-full bg-bg-alt text-accent" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
+          <h3 class="mt-4 text-xl font-bold text-ink">Attention to Detail</h3>
+          <p class="mt-2 text-muted">We notice what others overlook. Baseboards, window tracks, grout lines — the details that make a space actually clean, not just tidy.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <SectionHeader
+      title="What We Do"
+      lead="Six specialized cleaning services, each built for a different kind of client."
+    />
+    <div class="mt-10" data-reveal>
+      <RoundCarousel />
+    </div>
+  </section>
+
+  <section class="bg-bg-alt">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <SectionHeader
+        title="Our Story"
+        lead="From a single crew to a trusted Orlando cleaning partner."
+      />
+      <div class="mt-10 grid items-center gap-10 lg:grid-cols-2">
+        <div data-reveal>
+          <p class="text-lg leading-relaxed text-muted">
+            Luxury Duo Cleaning LLC was started with a simple belief: that
+            cleaning is a service business, and service means showing up,
+            doing the work right, and earning the next job.
+          </p>
+          <p class="mt-4 leading-relaxed text-muted">
+            Based in Orlando, we started serving residential clients and
+            quickly expanded into commercial and construction cleaning as
+            contractors recognized the quality of our work. Today, we serve
+            general contractors, property managers, Airbnb hosts, and
+            homeowners across the greater Orlando area.
+          </p>
+          <p class="mt-4 leading-relaxed text-muted">
+            We're still growing, and we're still hands-on. Every job gets the
+            same attention to detail whether it's a single-family home or a
+            large commercial buildout.
+          </p>
+        </div>
+        <div data-reveal="right">
+          <ImageSlot
+            slotId="team-photo"
+            src={`${base}draft/team.svg`}
+            alt="Luxury Duo Cleaning team serving Orlando FL"
+            aspect="4/3"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Let's Work Together"
+    primaryHref={link('/quote/')}
+    primaryLabel="Request a Free Quote"
+    secondaryHref={link('/contact/')}
+    secondaryLabel="Get in Touch"
+  />
+
+  <Footer slot="footer" />
+</BaseLayout>

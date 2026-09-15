@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import ContactForm from '../components/ContactForm.astro';
+import ContactInfoCard from '../components/ContactInfoCard.astro';
+import Button from '../components/Button.astro';
+import MapPlaceholder from '../components/MapPlaceholder.astro';
+import { link, PHONE_DISPLAY, EMAIL, HOURS, AREA } from '../lib/site';
+---
+
+<BaseLayout
+  title="Contact Us | Luxury Duo Cleaning LLC Orlando FL"
+  description="Contact Luxury Duo Cleaning LLC in Orlando FL. Ask a question or schedule a cleaning service — we respond within hours. Call, email, or send a message today."
+>
+  <Nav slot="nav" />
+
+  <PageHero
+    eyebrow="Contact"
+    title="Get in Touch"
+    lead="Have a question or ready to schedule? We respond within hours, not days."
+  />
+
+  <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <div class="grid items-start gap-10 lg:grid-cols-2">
+      <div class="rounded-xl border border-line bg-white p-6 shadow-sm sm:p-8" data-reveal>
+        <ContactForm />
+      </div>
+      <div class="flex flex-col gap-4" data-reveal="right">
+        <ContactInfoCard icon="phone" label="Phone" value={PHONE_DISPLAY} />
+        <ContactInfoCard icon="email" label="Email" value={EMAIL} />
+        <ContactInfoCard icon="hours" label="Business Hours" value={HOURS} />
+        <ContactInfoCard icon="area" label="Service Area" value={AREA} />
+        <div class="rounded-xl border border-line bg-bg-alt p-5">
+          <p class="font-semibold text-ink">Ready for a detailed estimate?</p>
+          <p class="mt-1 text-sm text-muted">Tell us about your space and get a quote within hours.</p>
+          <div class="mt-4">
+            <Button href={link('/quote/')} variant="primary" size="md" block>Request a Free Quote</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-bg-alt">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <SectionHeader
+        title="Our Service Area"
+        lead="We serve Orlando and all surrounding communities throughout Central Florida."
+      />
+      <div class="mx-auto mt-10 max-w-4xl">
+        <MapPlaceholder
+          title="Service Area Map"
+          text="Google Maps — Orlando, FL service area"
+        />
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>

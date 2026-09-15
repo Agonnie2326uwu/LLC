@@ -1,0 +1,188 @@
+---
+/* ContactForm — STUB mode (no network). Real Formspree wired post-signoff. */
+const inputCls =
+  'w-full rounded-lg border border-line bg-white px-4 py-3 text-ink placeholder:text-muted/60 focus:border-accent focus:outline-none';
+const labelCls = 'mb-1 block text-sm font-semibold text-ink';
+const errorCls = 'mt-1 text-sm text-red-600';
+---
+
+<div data-reveal data-form-wrap="contact">
+  <form id="contact-form" novalidate class="flex flex-col gap-5">
+    <div>
+      <label class={labelCls} for="contact-name">Name *</label>
+      <input
+        class={inputCls}
+        type="text"
+        id="contact-name"
+        name="name"
+        placeholder="Your name"
+        required
+        autocomplete="name"
+        aria-describedby="contact-name-error"
+      />
+      <p id="contact-name-error" class={errorCls} hidden>Please enter your name.</p>
+    </div>
+
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label class={labelCls} for="contact-email">Email *</label>
+        <input
+          class={inputCls}
+          type="email"
+          id="contact-email"
+          name="email"
+          placeholder="you@example.com"
+          required
+          autocomplete="email"
+          aria-describedby="contact-email-error"
+        />
+        <p id="contact-email-error" class={errorCls} hidden>Please enter a valid email.</p>
+      </div>
+      <div>
+        <label class={labelCls} for="contact-phone">Phone</label>
+        <input
+          class={inputCls}
+          type="tel"
+          id="contact-phone"
+          name="phone"
+          placeholder="(407) 555-1234"
+          autocomplete="tel"
+          aria-describedby="contact-phone-error"
+        />
+        <p id="contact-phone-error" class={errorCls} hidden>Please enter a valid phone number.</p>
+      </div>
+    </div>
+
+    <div>
+      <label class={labelCls} for="contact-subject">Subject *</label>
+      <select
+        class={inputCls}
+        id="contact-subject"
+        name="subject"
+        required
+        aria-describedby="contact-subject-error"
+      >
+        <option value="" disabled selected>Select a topic</option>
+        <option value="general">General Inquiry</option>
+        <option value="quote">Request a Quote</option>
+        <option value="scheduling">Scheduling Question</option>
+        <option value="feedback">Feedback</option>
+        <option value="other">Other</option>
+      </select>
+      <p id="contact-subject-error" class={errorCls} hidden>Please select a topic.</p>
+    </div>
+
+    <div>
+      <label class={labelCls} for="contact-message">Message *</label>
+      <textarea
+        class={inputCls}
+        id="contact-message"
+        name="message"
+        rows="5"
+        placeholder="How can we help?"
+        required
+        aria-describedby="contact-message-error"
+      ></textarea>
+      <p id="contact-message-error" class={errorCls} hidden>Please enter a message.</p>
+    </div>
+
+    <button
+      type="submit"
+      class="w-full rounded-lg bg-primary px-6 py-3 text-center font-semibold text-white transition hover:bg-primary-light"
+    >
+      Send Message
+    </button>
+    <p class="text-center text-sm text-muted">
+      We typically respond within a few hours during business days.
+    </p>
+  </form>
+
+  <div id="contact-success" hidden class="rounded-xl border border-line bg-bg-alt p-8 text-center" role="status">
+    <h3 class="text-2xl font-bold text-ink">Thanks — message received!</h3>
+    <p class="mx-auto mt-2 max-w-md text-muted">
+      Preview mode — not sending. Real Formspree wired post-signoff.
+    </p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+    const wrap = form.closest('[data-form-wrap="contact"]');
+    const success = wrap ? wrap.querySelector('#contact-success') : document.getElementById('contact-success');
+
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const PHONE_RE = /^[+\d][\d\s().-]{5,}$/;
+
+    function setError(input, hasError) {
+      if (!input) return;
+      const err = document.getElementById(input.id + '-error');
+      input.setAttribute('aria-invalid', hasError ? 'true' : 'false');
+      input.classList.toggle('border-red-500', hasError);
+      if (err) {
+        if (hasError) err.removeAttribute('hidden');
+        else err.setAttribute('hidden', '');
+      }
+    }
+
+    function validateField(input) {
+      const val = input.value.trim();
+      const id = input.id;
+      if (id === 'contact-email') {
+        const bad = val === '' || !EMAIL_RE.test(val);
+        setError(input, bad);
+        return !bad;
+      }
+      if (id === 'contact-phone') {
+        if (val === '') {
+          setError(input, false);
+          return true;
+        }
+        const digits = val.replace(/\D/g, '');
+        const bad = !PHONE_RE.test(val) || digits.length < 7;
+        setError(input, bad);
+        return !bad;
+      }
+      const bad = val === '';
+      setError(input, bad);
+      return !bad;
+    }
+
+    ['contact-name', 'contact-email', 'contact-phone', 'contact-subject', 'contact-message'].forEach((id) => {
+      const el = document.getElementById(id);
+      el?.addEventListener('input', () => setError(el, false));
+      el?.addEventListener('change', () => setError(el, false));
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const ids = ['contact-name', 'contact-email', 'contact-subject', 'contact-message'];
+      let firstInvalid = null;
+      ids.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const ok = validateField(el);
+        if (!ok && !firstInvalid) firstInvalid = el;
+      });
+      // Phone: validate only if filled
+      const phone = document.getElementById('contact-phone');
+      if (phone && phone.value.trim() !== '') {
+        const ok = validateField(phone);
+        if (!ok && !firstInvalid) firstInvalid = phone;
+      }
+      if (firstInvalid) {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        firstInvalid.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+        firstInvalid.focus({ preventScroll: true });
+        return;
+      }
+      // STUB mode: no network — show success panel
+      form.setAttribute('hidden', '');
+      if (success) {
+        success.removeAttribute('hidden');
+        success.scrollIntoView({ block: 'center' });
+      }
+    });
+  })();
+</script>

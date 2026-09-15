@@ -1,0 +1,129 @@
+---
+import { SERVICES } from '../lib/services.ts';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<div data-carousel="round" class="flex items-center gap-2 sm:gap-4">
+  <button
+    type="button"
+    data-prev
+    aria-label="Previous service"
+    class="my-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-xl text-primary shadow-sm transition hover:bg-bg-alt"
+  >
+    <span aria-hidden="true">←</span>
+  </button>
+
+  <div class="min-w-0 flex-1">
+    <div data-track class="flex items-center justify-center gap-4 sm:gap-6">
+      {SERVICES.map((service, i) => (
+        <article
+          data-slide={String(i)}
+          data-reveal
+          class="flex w-40 shrink-0 flex-col items-center gap-3 rounded-xl border border-line bg-white p-4 text-center shadow-sm transition-all duration-300 sm:w-52"
+        >
+          <img
+            src={`${base}${service.image}`}
+            alt={service.imageAlt}
+            loading="lazy"
+            width="160"
+            height="160"
+            class="aspect-square h-24 w-24 rounded-full object-cover sm:h-32 sm:w-32"
+          />
+          <h3 class="text-sm font-bold text-ink sm:text-base">{service.title}</h3>
+          <a
+            href={`${base}services/#${service.slug}`}
+            class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:text-accent-hover hover:underline"
+            tabindex="-1"
+            data-link
+          >
+            Learn more <span aria-hidden="true">→</span>
+          </a>
+        </article>
+      ))}
+    </div>
+
+    <div class="mt-6 flex items-center justify-center gap-2">
+      {SERVICES.map((service, i) => (
+        <button
+          type="button"
+          data-dot={String(i)}
+          aria-label={`Show ${service.title}`}
+          aria-current={i === 0 ? 'true' : undefined}
+          class={`h-3 w-3 rounded-full transition ${i === 0 ? 'bg-primary' : 'bg-line hover:bg-silver'}`}
+        />
+      ))}
+    </div>
+    <p data-status class="sr-only" aria-live="polite">Showing 1 of 6</p>
+  </div>
+
+  <button
+    type="button"
+    data-next
+    aria-label="Next service"
+    class="my-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-xl text-primary shadow-sm transition hover:bg-bg-alt"
+  >
+    <span aria-hidden="true">→</span>
+  </button>
+</div>
+
+<script>
+  const roots = document.querySelectorAll('[data-carousel="round"]');
+  roots.forEach((root) => {
+    const slides = Array.from(root.querySelectorAll('[data-slide]')) as HTMLElement[];
+    const dots = Array.from(root.querySelectorAll('[data-dot]'));
+    const prev = root.querySelector('[data-prev]');
+    const next = root.querySelector('[data-next]');
+    const status = root.querySelector('[data-status]');
+    const total = slides.length;
+    let active = 0;
+
+    function show(i) {
+      active = ((i % total) + total) % total;
+      const visible = new Set([
+        ((active - 1) + total) % total,
+        active,
+        (active + 1) % total,
+      ]);
+      slides.forEach((slide, si) => {
+        const isActive = si === active;
+        const isVisible = visible.has(si);
+        slide.toggleAttribute('hidden', !isVisible);
+        slide.classList.toggle('scale-100', isActive);
+        slide.classList.toggle('opacity-100', isActive);
+        slide.classList.toggle('scale-90', !isActive);
+        slide.classList.toggle('opacity-80', !isActive);
+        slide.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
+        const link = slide.querySelector('[data-link]');
+        if (link) {
+          if (isActive) link.removeAttribute('tabindex');
+          else link.setAttribute('tabindex', '-1');
+        }
+      });
+      dots.forEach((d, di) => {
+        const on = di === active;
+        if (on) d.setAttribute('aria-current', 'true');
+        else d.removeAttribute('aria-current');
+        d.classList.toggle('bg-primary', on);
+        d.classList.toggle('bg-line', !on);
+      });
+      if (status) {
+        const title = slides[active]?.querySelector('h3')?.textContent?.trim() ?? `Service ${active + 1}`;
+        status.textContent = `Showing ${active + 1} of ${total}: ${title}`;
+      }
+    }
+
+    prev?.addEventListener('click', () => show(active - 1));
+    next?.addEventListener('click', () => show(active + 1));
+    dots.forEach((d, di) => d.addEventListener('click', () => show(di)));
+    show(0);
+  });
+</script>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    [data-carousel="round"] [data-slide] {
+      transition: none !important;
+    }
+  }
+</style>
