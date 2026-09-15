@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | Luxury Duo Cleaning LLC Orlando FL</title>
+  <meta name="description" content="Contact Luxury Duo Cleaning LLC in Orlando FL. Request a quote, ask a question, or schedule a cleaning service. Call or email us today.">
+  <link rel="canonical" href="https://luxuryduocleaning.com/contact.html">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav__inner container">
+      <a href="index.html" class="nav__logo" aria-label="Luxury Duo Cleaning — Home">
+        <div class="nav__logo-mark">LD</div>
+        <span>Luxury Duo Cleaning</span>
+      </a>
+      <div class="nav__links" role="menubar">
+        <a href="index.html" class="nav__link" role="menuitem">Home</a>
+        <a href="about.html" class="nav__link" role="menuitem">About</a>
+        <a href="services.html" class="nav__link" role="menuitem">Services</a>
+        <a href="contact.html" class="nav__link nav__link--active" role="menuitem">Contact</a>
+        <a href="quote.html" class="nav__cta" role="menuitem">Get a Quote</a>
+      </div>
+      <button class="nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="page-content">
+
+    <!-- PAGE HERO -->
+    <section class="page-hero">
+      <div class="container">
+        <span class="hero__eyebrow">Contact</span>
+        <h1>Get in Touch</h1>
+        <p>Have a question or ready to schedule? We respond within hours, not days.</p>
+      </div>
+    </section>
+
+    <!-- CONTACT GRID -->
+    <section class="section">
+      <div class="container">
+        <div class="contact-grid">
+
+          <!-- CONTACT FORM -->
+          <div data-reveal>
+            <div class="form-card">
+            <!-- TODO: Replace Formspree action with real endpoint, or swap for mailto fallback -->
+            <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" data-validate>
+              <div class="form-group">
+                <label class="form-label" for="contact-name">Name</label>
+                <input class="form-input" type="text" id="contact-name" name="name" placeholder="Your name" required>
+                <span class="form-error">Please enter your name.</span>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="contact-email">Email</label>
+                  <input class="form-input" type="email" id="contact-email" name="email" placeholder="you@example.com" required>
+                  <span class="form-error">Please enter a valid email.</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="contact-phone">Phone</label>
+                  <input class="form-input" type="tel" id="contact-phone" name="phone" placeholder="(407) 555-1234">
+                  <span class="form-error">Please enter a valid phone number.</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-subject">Subject</label>
+                <select class="form-select" id="contact-subject" name="subject" required>
+                  <option value="" disabled selected>Select a topic</option>
+                  <option value="general">General Inquiry</option>
+                  <option value="quote">Request a Quote</option>
+                  <option value=" scheduling">Scheduling Question</option>
+                  <option value="feedback">Feedback</option>
+                  <option value="other">Other</option>
+                </select>
+                <span class="form-error">Please select a topic.</span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-message">Message</label>
+                <textarea class="form-textarea" id="contact-message" name="message" placeholder="How can we help?" required></textarea>
+                <span class="form-error">Please enter a message.</span>
+              </div>
+
+              <button type="submit" class="btn btn--primary">Send Message</button>
+              <p class="quote-form__note">We typically respond within a few hours during business days.</p>
+            </form>
+            </div>
+          </div>
+
+          <!-- CONTACT INFO -->
+          <div data-reveal="right">
+            <div class="form-card">
+            <div class="contact-info">
+            <div class="contact-info-card">
+              <div class="contact-info-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-card__label">Phone</div>
+                <!-- TODO: Replace with real phone number -->
+                <div class="contact-info-card__value">(407) 555-1234</div>
+              </div>
+            </div>
+
+            <div class="contact-info-card">
+              <div class="contact-info-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-card__label">Email</div>
+                <div class="contact-info-card__value">info@luxuryduocleaning.com</div>
+              </div>
+            </div>
+
+            <div class="contact-info-card">
+              <div class="contact-info-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-card__label">Business Hours</div>
+                <div class="contact-info-card__value">Mon — Sat: 7AM — 7PM</div>
+              </div>
+            </div>
+
+            <div class="contact-info-card">
+              <div class="contact-info-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-card__label">Service Area</div>
+                <div class="contact-info-card__value">Orlando, FL &amp; Surrounding Areas</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 0.5rem;">
+              <a href="quote.html" class="btn btn--primary" style="width: 100%; text-align: center;">Request a Free Quote</a>
+            </div>
+            </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- MAP -->
+    <section class="section section--alt">
+      <div class="container">
+        <div class="section-header" data-reveal>
+          <h2>Our Service Area</h2>
+          <p>We serve Orlando and all surrounding communities throughout Central Florida.</p>
+        </div>
+
+        <div class="map-container" data-reveal="scale">
+          <!-- TODO: Replace with real Google Maps embed for Orlando, FL -->
+          <div class="map-placeholder">
+            <span>Google Maps — Orlando, FL service area</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page-content -->
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <div class="footer__logo">
+            <div class="footer__logo-mark">LD</div>
+            <span>Luxury Duo Cleaning</span>
+          </div>
+          <p>Precision cleaning for contractors, commercial properties, and homeowners across the Orlando area.</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">Services</h4>
+          <div class="footer__links">
+            <a href="services.html#construction" class="footer__link">Pre &amp; Post-Construction</a>
+            <a href="services.html#commercial" class="footer__link">Commercial Cleaning</a>
+            <a href="services.html#residential" class="footer__link">Residential Cleaning</a>
+            <a href="services.html#airbnb" class="footer__link">Airbnb / Vacation Rental</a>
+            <a href="services.html#movein" class="footer__link">Move-In / Move-Out</a>
+            <a href="services.html#deep" class="footer__link">Deep Cleaning</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="footer__heading">Company</h4>
+          <div class="footer__links">
+            <a href="about.html" class="footer__link">About Us</a>
+            <a href="contact.html" class="footer__link">Contact</a>
+            <a href="quote.html" class="footer__link">Get a Quote</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="footer__heading">Contact</h4>
+          <div class="footer__contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+            <!-- TODO: Replace with real phone number -->
+            <span>(407) 555-1234</span>
+          </div>
+          <div class="footer__contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span>info@luxuryduocleaning.com</span>
+          </div>
+          <div class="footer__contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Orlando, FL &amp; Surrounding Areas</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>&copy; 2026 Luxury Duo Cleaning LLC. All rights reserved.</span>
+        <div class="footer__social">
+          <a href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

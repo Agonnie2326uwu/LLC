@@ -1,0 +1,53 @@
+PROJECT: Marketing website for Luxury Duo Cleaning LLC
+
+BUSINESS CONTEXT
+- Company: Luxury Duo Cleaning LLC, based in Orlando, FL, serving the entire Orlando area.
+- Status: already operating but not yet well known — this site needs to build credibility fast.
+- Positioning: efficient, reliable cleaning with meticulous attention to detail. The brand name itself should feel premium and precise.
+- Primary target audience (in priority order): 1) contractors & construction companies (pre- and post-construction cleaning), 2) commercial clients, 3) Airbnb/vacation rental hosts, 4) residential clients.
+- Services to feature: residential cleaning, commercial cleaning, Airbnb/vacation rental cleaning, move-in/move-out cleaning, deep cleaning, and pre/post-construction cleaning (this last one should feel like a flagship service given the target audience).
+- Site goals, in order: 1) generate quote requests, 2) generate phone calls, 3) generate service bookings.
+- Contact: info@luxuryduocleaning.com (placeholder — swap in real phone number and any other real contact info once provided).
+- Assets: client has a logo already but it hasn't been shared yet — build the design system with clearly swappable CSS variables so the real logo can drop in later. Only ~2 real project photos exist — use clean, high-quality stock photography (commercial/construction cleaning, not generic mops-and-bubbles residential stock) as placeholders in clearly marked image slots, structured so real photos can replace them with zero layout changes.
+
+DESIGN DIRECTION / UI (this is the priority — spend real effort here)
+- Overall feel: premium, precise, trustworthy — not cutesy. Think "the cleaning company a general contractor would actually hire," not a homey/residential vibe.
+- Palette: deep blue (#16324F or similar) as the primary, a brighter accent blue (#3E7CB1 or similar), silver/light gray (#C7CDD4, #E8EAED) for secondary surfaces and dividers, and a crisp white/off-white background. Use the silver sparingly as an accent (borders, icon backgrounds, dividers) rather than as a dominant fill — it should read as "polish," not "dull."
+- Typography: clean modern sans-serif throughout (e.g. Inter, Manrope, or similar system-safe fallback), a heavier weight for headings to keep the premium feel. Generous whitespace, sharp edges or very subtle rounding — avoid a playful/rounded aesthetic.
+- Hero section: full-width, high-impact image of a clean commercial/construction space, bold headline focused on reliability + detail, one primary CTA ("Request a Free Quote") and one secondary CTA ("Call Now").
+- Trust bar directly under the hero: licensed & insured, background-checked staff, satisfaction guarantee, serving all of Orlando — small icon + text badges in a horizontal row.
+- Services section: card grid (5–6 cards) for each service, each with an icon or photo, a one-line description, and a "Learn more" link. Visually highlight the pre/post-construction card as the flagship offering (e.g., larger card, accent border, or "Most Requested" tag).
+- "Why Choose Us" section: 4–6 short value props with icons (attention to detail, reliability, contractor-friendly scheduling, insured & professional, etc.) in a clean grid.
+- Testimonials section: card layout with star ratings, client name, and a short quote — use realistic placeholder testimonials clearly commented in the HTML as "REPLACE WITH REAL REVIEWS."
+- Service area section: short copy ("Proudly serving Orlando and the surrounding areas") plus an embedded Google Maps iframe placeholder.
+- Request-a-Quote form: prominent, accessible from every page (header CTA + dedicated page). Fields: name, phone, email, service type (dropdown matching the services list), property type (residential / commercial / construction site), city/area, preferred timeline, and a message/details box. No more than 6-7 fields.
+- Footer: logo, short tagline, contact info, service links, social links (Instagram handle — note it exists but is currently unused), and a final CTA.
+- Fully responsive, mobile-first — construction/commercial clients are often looking this up on a job site on their phone. Use CSS Grid/Flexbox with media queries, no framework.
+
+SEAMLESS UX / MOTION
+- Scroll reveal: use the Intersection Observer API to fade/slide each major section into view as the user scrolls (subtle — translateY(20px) + opacity fade, ~400-600ms, not bouncy or flashy).
+- Seamless visual flow between sections: avoid hard horizontal borders between sections. Use soft gradient transitions, subtly shifting background tones, and overlapping elements (e.g. a card or image bleeding slightly into the next section) so the page feels like one continuous surface rather than stacked blocks.
+- Seamless page-to-page navigation: implement a lightweight vanilla-JS page transition system — intercept internal link clicks, fetch the destination HTML, fade out the current main content, swap in the new content, fade it in, and update the URL with the History API (pushState/popState) so back/forward buttons still work correctly. This keeps the simplicity of separate HTML files while making navigation feel like a single continuous app, not a hard page reload.
+- Respect prefers-reduced-motion: all animations and transitions should be disabled or minimized for users with that preference set.
+- Keep all motion tasteful and fast — this should read as polished and premium, never gimmicky or slow to load.
+
+SITE STRUCTURE (pages — separate .html files)
+1. index.html (Home) — hero, trust bar, services grid, why-choose-us, featured testimonials, service area, final CTA
+2. about.html — mission ("to secure contracts, become a recognized name, and leave a mark through quality work"), what sets them apart (efficiency, reliability, attention to detail), team/story section
+3. services.html — full breakdown of all 6 services, each with its own section/anchor, construction/commercial services given top billing
+4. testimonials.html — full reviews page (placeholder content, structured for easy real-review swap-in)
+5. contact.html — contact form, phone/email, service area, map
+6. quote.html — the detailed quote form described above, with service-specific fields where relevant (e.g., construction cleaning could ask for square footage and project completion date)
+
+TECHNICAL
+- Stack: plain HTML5, CSS3, and vanilla JavaScript. No frameworks, no build tools, no npm dependencies required.
+- Shared header/nav and footer, consistent across all pages, compatible with the page-transition system described above.
+- One main stylesheet (styles.css) using CSS custom properties (--color-primary, --color-accent, --color-silver, etc.) at the top so the palette and logo can be swapped in one place later.
+- JavaScript (script.js) handles: mobile nav toggle, form validation, smooth scroll for anchor links, the Intersection Observer scroll-reveal system, and the fetch-based page transition/router described above.
+- Semantic HTML and proper heading hierarchy for SEO/accessibility.
+- Basic on-page SEO: title tags and meta descriptions per page, with local SEO phrasing for "Orlando cleaning company," "post construction cleaning Orlando," etc. Note: since navigation is intercepted via JS, make sure each page is still a fully valid, independently crawlable HTML document (progressive enhancement — the site must work correctly with JS disabled, just without the fade transitions).
+- Since there's no backend, wire the quote/contact forms to a no-code form handler (e.g. Formspree) or a mailto fallback, and note this clearly in comments so it can be swapped for a real backend later.
+- Optimize images (proper sizing, lazy loading), keep the site fast and lightweight despite the added motion/transition code.
+- Comment every placeholder (photos, testimonials, phone number, logo) clearly so it's obvious what needs real client data before launch.
+
+Build this as a polished, production-quality marketing site — UI/UX craft, including the seamless scroll and navigation feel, is the top priority even without a framework.

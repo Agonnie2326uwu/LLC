@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request a Free Quote | Luxury Duo Cleaning LLC Orlando FL</title>
+  <meta name="description" content="Get a free cleaning quote from Luxury Duo Cleaning LLC in Orlando FL. Commercial, residential, construction, and Airbnb cleaning services.">
+  <link rel="canonical" href="https://luxuryduocleaning.com/quote.html">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav__inner container">
+      <a href="index.html" class="nav__logo" aria-label="Luxury Duo Cleaning — Home">
+        <div class="nav__logo-mark">LD</div>
+        <span>Luxury Duo Cleaning</span>
+      </a>
+      <div class="nav__links" role="menubar">
+        <a href="index.html" class="nav__link" role="menuitem">Home</a>
+        <a href="about.html" class="nav__link" role="menuitem">About</a>
+        <a href="services.html" class="nav__link" role="menuitem">Services</a>
+        <a href="contact.html" class="nav__link" role="menuitem">Contact</a>
+        <a href="quote.html" class="nav__cta nav__link--active" role="menuitem">Get a Quote</a>
+      </div>
+      <button class="nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="page-content">
+
+    <!-- PAGE HERO -->
+    <section class="quote-hero">
+      <div class="container">
+        <span class="hero__eyebrow">Free Quote</span>
+        <h1>Request a Free Quote</h1>
+        <p>Tell us about your space and we'll get back to you with a detailed estimate within hours.</p>
+      </div>
+    </section>
+
+    <!-- QUOTE FORM -->
+    <section class="section">
+      <div class="container">
+        <div class="quote-form-wrapper form-card" data-reveal>
+
+          <!-- TODO: Replace Formspree action with real endpoint -->
+          <form class="quote-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" data-validate>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="quote-name">Full Name *</label>
+                <input class="form-input" type="text" id="quote-name" name="name" placeholder="Your full name" required>
+                <span class="form-error">Please enter your name.</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="quote-phone">Phone Number *</label>
+                <input class="form-input" type="tel" id="quote-phone" name="phone" placeholder="(407) 555-1234" required>
+                <span class="form-error">Please enter a valid phone number.</span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="quote-email">Email Address *</label>
+                <input class="form-input" type="email" id="quote-email" name="email" placeholder="you@example.com" required>
+                <span class="form-error">Please enter a valid email.</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="quote-city">City / Area *</label>
+                <input class="form-input" type="text" id="quote-city" name="city" placeholder="e.g. Winter Park, Kissimmee" required>
+                <span class="form-error">Please enter your city or area.</span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="service-type">Service Needed *</label>
+                <select class="form-select" id="service-type" name="service" required>
+                  <option value="" disabled selected>Select a service</option>
+                  <option value="pre-post-construction">Pre &amp; Post-Construction Cleaning</option>
+                  <option value="commercial">Commercial Cleaning</option>
+                  <option value="residential">Residential Cleaning</option>
+                  <option value="airbnb">Airbnb / Vacation Rental Cleaning</option>
+                  <option value="movein">Move-In / Move-Out Cleaning</option>
+                  <option value="deep">Deep Cleaning</option>
+                  <option value="other">Other / Not Sure</option>
+                </select>
+                <span class="form-error">Please select a service.</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="property-type">Property Type *</label>
+                <select class="form-select" id="property-type" name="property" required>
+                  <option value="" disabled selected>Select property type</option>
+                  <option value="residential">Residential — House / Apartment</option>
+                  <option value="commercial">Commercial — Office / Retail / Facility</option>
+                  <option value="construction">Construction Site</option>
+                  <option value="airbnb">Vacation Rental / Airbnb</option>
+                </select>
+                <span class="form-error">Please select a property type.</span>
+              </div>
+            </div>
+
+            <!-- Construction-specific fields: hidden by default, shown when Pre/Post-Construction is selected -->
+            <div id="construction-fields" class="form-hidden">
+              <div class="form-row" style="margin-bottom: 1.5rem;">
+                <div class="form-group">
+                  <label class="form-label" for="square-footage">Approx. Square Footage</label>
+                  <input class="form-input" type="text" id="square-footage" name="square_footage" placeholder="e.g. 2,500 sq ft">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="project-date">Expected Completion Date</label>
+                  <input class="form-input" type="date" id="project-date" name="project_date">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="quote-timeline">Preferred Timeline</label>
+              <select class="form-select" id="quote-timeline" name="timeline">
+                <option value="" disabled selected>Select a timeline</option>
+                <option value="asap">As soon as possible</option>
+                <option value="1-week">Within 1 week</option>
+                <option value="2-weeks">Within 2 weeks</option>
+                <option value="1-month">Within 1 month</option>
+                <option value="flexible">Flexible / No rush</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="quote-details">Additional Details</label>
+              <textarea class="form-textarea" id="quote-details" name="details" placeholder="Tell us more about your space, special requirements, or anything we should know..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn--primary" style="width: 100%; text-align: center;">Submit Quote Request</button>
+            <p class="quote-form__note">We'll review your request and respond with a detailed estimate within hours. No obligation, no pressure.</p>
+          </form>
+
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page-content -->
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <div class="footer__logo">
+            <div class="footer__logo-mark">LD</div>
+            <span>Luxury Duo Cleaning</span>
+          </div>
+          <p>Precision cleaning for contractors, commercial properties, and homeowners across the Orlando area.</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">Services</h4>
+          <div class="footer__links">
+            <a href="services.html#construction" class="footer__link">Pre &amp; Post-Construction</a>
+            <a href="services.html#commercial" class="footer__link">Commercial Cleaning</a>
+            <a href="services.html#residential" class="footer__link">Residential Cleaning</a>
+            <a href="services.html#airbnb" class="footer__link">Airbnb / Vacation Rental</a>
+            <a href="services.html#movein" class="footer__link">Move-In / Move-Out</a>
+            <a href="services.html#deep" class="footer__link">Deep Cleaning</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="footer__heading">Company</h4>
+          <div class="footer__links">
+            <a href="about.html" class="footer__link">About Us</a>
+            <a href="contact.html" class="footer__link">Contact</a>
+            <a href="quote.html" class="footer__link">Get a Quote</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="footer__heading">Contact</h4>
+          <div class="footer__contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+            <!-- TODO: Replace with real phone number -->
+            <span>(407) 555-1234</span>
+          </div>
+          <div class="footer__contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span>info@luxuryduocleaning.com</span>
+          </div>
+          <div class="footer__contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Orlando, FL &amp; Surrounding Areas</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>&copy; 2026 Luxury Duo Cleaning LLC. All rights reserved.</span>
+        <div class="footer__social">
+          <a href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
