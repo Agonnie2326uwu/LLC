@@ -15,14 +15,14 @@ Last updated: 2026-09-15
 
 ## 2. Locked decisions
 - Stack: Astro 5 + Tailwind v4 + TypeScript, static output.
-- Preview host: GitHub Pages project URL (`<user>.github.io/LLC/`).
+- Preview host: GitHub Pages project URL (`https://n3mo1101.github.io/LLC/`).
 - Production host (later): GoDaddy (static `dist/` upload).
 - Forms (preview): Formspree STUB mode (fake success + DRAFT note). Live ID only after sign-off.
 - Scope: "all of it" — style tile + all 5 pages + component gallery, rebuilt in Astro now (preview code = production code).
 - IA v1: keep 5 pages (index, about, services with anchors, contact, quote). No per-service SEO split until v2.
 
 ## 3. Tech stack details
-- Astro `output: 'static'`, `site: 'https://<user>.github.io'`, `base: '/LLC/'`.
+- Astro `output: 'static'`, `site: 'https://n3mo1101.github.io'`, `base: '/LLC/'`.
 - Tailwind v4 `@theme` maps existing tokens: primary #16324F, primary-light #1d4168, accent #3E7CB1, silver #C7CDD4/#E8EAED, bg #FFF / bg-alt #F5F7F9, text #1A1A2E / muted #5A6270, Inter/system-ui.
 - `astro:assets` for build-time WebP/AVIF + responsive + CLS-safe dimensions (matters on GH Pages + GoDaddy: no edge image CDN).
 - Islands only for nav/carousels/forms. Kill prototype SPA fetch-transitions (broke carousel re-init, hurt LCP).

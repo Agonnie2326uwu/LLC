@@ -53,7 +53,7 @@ Page/section | Client comment | Decision (keep/change/defer) | Owner | Rework co
 ```
 
 ## Preview Definition of Done
-All 5 pages + `/design/` live at `https://<user>.github.io/LLC/`, no hardcoded `/` asset paths, no picsum hotlinks, forms show stub success, every placeholder has DRAFT pill, nav/footer/carousels work with keyboard + mobile.
+All 5 pages + `/design/` live at `https://n3mo1101.github.io/LLC/`, no hardcoded `/` asset paths, no picsum hotlinks, forms show stub success, every placeholder has DRAFT pill, nav/footer/carousels work with keyboard + mobile.
 
 ## Execution notes (for build mode)
 - Implement in todo order; todos 3+4+5 can parallelize via sub-agents with a coordinator.
