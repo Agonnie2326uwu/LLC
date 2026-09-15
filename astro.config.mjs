@@ -1,10 +1,10 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
-// Preview: https://iskatiboi.github.io/LLC/
+// Preview: https://n3mo1101.github.io/LLC/
 // Production (GoDaddy, later): change base to '/' and site to 'https://luxuryduocleaning.com'
 export default defineConfig({
-  site: 'https://iskatiboi.github.io',
+  site: 'https://n3mo1101.github.io',
   base: '/LLC/',
   output: 'static',
   vite: {
