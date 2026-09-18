@@ -7,13 +7,19 @@ import Hero from '../components/Hero.astro';
 import TrustBar from '../components/TrustBar.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import ServicesCarousel from '../components/ServicesCarousel.astro';
-import ValueProp from '../components/ValueProp.astro';
 import TestimonialsCarousel from '../components/TestimonialsCarousel.astro';
 import MapPlaceholder from '../components/MapPlaceholder.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { link, PHONE_HREF } from '../lib/site';
 
 const base = import.meta.env.BASE_URL;
+
+const WHY_US = [
+  { title: 'Attention to Detail', text: "Every corner, every surface, every edge. We clean like it's our own space." },
+  { title: 'On-Time, Every Time', text: 'Contractor-friendly scheduling. We show up when we say we will.' },
+  { title: 'Insured & Professional', text: 'Fully licensed and insured. A background-checked team you can trust on any job site.' },
+  { title: 'Fast Response Times', text: 'Quotes within hours, not days. We move at your pace.' },
+];
 ---
 
 <BaseLayout
@@ -25,13 +31,12 @@ const base = import.meta.env.BASE_URL;
   <Hero
     eyebrow="Orlando's Trusted Cleaning Partner"
     title="Precision Cleaning. Zero Shortcuts."
-    subtitle="Reliable, detail-obsessed cleaning for contractors, commercial properties, and homes across the Orlando area. Licensed, insured, and built to perform."
     primaryHref={link('/quote/')}
     primaryLabel="Request a Free Quote"
     secondaryHref={PHONE_HREF}
     secondaryLabel="Call Now"
-    imageSrc={`${base}draft/hero.svg`}
-    imageAlt="Pristine commercial space in Orlando FL after professional cleaning by Luxury Duo Cleaning"
+    imageSrc={`${base}images/hero-cleaning.jpg`}
+    imageAlt="Amber glass cleaning spray bottles and wood brush — eco cleaning supplies by Luxury Duo Cleaning Orlando FL"
   />
 
   <TrustBar />
@@ -54,11 +59,16 @@ const base = import.meta.env.BASE_URL;
         title="Why Choose Luxury Duo Cleaning"
         lead="We don't just clean spaces. We build relationships with contractors, businesses, and homeowners who demand consistency."
       />
-      <div class="mt-10 grid gap-6 md:grid-cols-2">
-        <ValueProp icon="detail" title="Attention to Detail" text="Every corner, every surface, every edge. We clean like it's our own space." />
-        <ValueProp icon="clock" title="On-Time, Every Time" text="Contractor-friendly scheduling. We show up when we say we will." />
-        <ValueProp icon="shield" title="Insured & Professional" text="Fully licensed and insured. A background-checked team you can trust on any job site." />
-        <ValueProp icon="bolt" title="Fast Response Times" text="Quotes within hours, not days. We move at your pace." />
+      <div class="mx-auto mt-10 max-w-4xl" data-reveal>
+        {WHY_US.map((item, i) => (
+          <details class="group border-b border-line py-6 first:border-t" name="why-us" open={i === 0 ? true : undefined}>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+              <span class="text-2xl font-bold text-ink sm:text-3xl">{item.title}</span>
+              <span aria-hidden="true" class="flex h-10 w-10 shrink-0 items-center justify-center text-3xl font-light text-ink transition-transform duration-300 group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-3 max-w-3xl text-lg leading-relaxed text-muted">{item.text}</p>
+          </details>
+        ))}
       </div>
     </div>
   </section>

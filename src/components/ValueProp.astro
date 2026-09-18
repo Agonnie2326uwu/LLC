@@ -1,6 +1,6 @@
 ---
 interface Props {
-  icon: 'detail' | 'clock' | 'shield' | 'bolt';
+  icon?: 'detail' | 'clock' | 'shield' | 'bolt';
   title: string;
   text: string;
 }
@@ -9,6 +9,7 @@ const { icon, title, text } = Astro.props;
 ---
 
 <div data-reveal class="flex items-start gap-4 rounded-xl border border-line bg-white p-6 shadow-sm">
+  {icon && (
   <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-bg-alt text-accent" aria-hidden="true">
     {icon === 'detail' && (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
@@ -33,6 +34,7 @@ const { icon, title, text } = Astro.props;
       </svg>
     )}
   </span>
+  )}
   <span>
     <span class="block text-lg font-bold text-ink">{title}</span>
     <span class="block text-muted">{text}</span>

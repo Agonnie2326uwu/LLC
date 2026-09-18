@@ -4,6 +4,34 @@ import ServiceCard from './ServiceCard.astro';
 
 const base = import.meta.env.BASE_URL;
 const groups = [SERVICES.slice(0, 3), SERVICES.slice(3, 6)];
+
+// Home-only photo overrides (services page keeps the shared images from services.ts)
+const HOME_IMAGES: Record<string, { image: string; imageAlt: string }> = {
+  construction: {
+    image: 'images/services/home-construction.jpg',
+    imageAlt: 'Crew in hard hats detailing windows and floors — post-construction cleaning in Orlando FL',
+  },
+  commercial: {
+    image: 'images/services/home-commercial.jpg',
+    imageAlt: 'Cleaning team vacuuming and mopping an office — commercial cleaning in Orlando FL',
+  },
+  residential: {
+    image: 'images/services/home-residential.jpg',
+    imageAlt: 'Broom sweeping a wood floor — residential cleaning in Orlando FL',
+  },
+  airbnb: {
+    image: 'images/services/home-airbnb.jpg',
+    imageAlt: 'Cleaner carrying a caddy of spray bottles — Airbnb turnover cleaning in Orlando FL',
+  },
+  movein: {
+    image: 'images/services/home-movein.jpg',
+    imageAlt: 'Moving boxes with a broom ready — move-in move-out cleaning in Orlando FL',
+  },
+  deep: {
+    image: 'images/services/home-deep.jpg',
+    imageAlt: 'Hands in yellow rubber gloves with spray bottle and sponge — deep cleaning in Orlando FL',
+  },
+};
 ---
 
 <div data-carousel="services" class="flex items-stretch gap-2 sm:gap-4">
@@ -19,14 +47,16 @@ const groups = [SERVICES.slice(0, 3), SERVICES.slice(3, 6)];
   <div class="min-w-0 flex-1">
     {groups.map((group, gi) => (
       <div data-group={String(gi)} hidden={gi !== 0} class="grid gap-6 md:grid-cols-3">
-        {group.map((service) => (
+        {group.map((service, i) => (
           <ServiceCard
             title={service.title}
             desc={service.desc}
             href={`${base}services/#${service.slug}`}
-            imageSrc={`${base}${service.image}`}
-            imageAlt={service.imageAlt}
+            imageSrc={`${base}${HOME_IMAGES[service.slug]?.image ?? service.image}`}
+            imageAlt={HOME_IMAGES[service.slug]?.imageAlt ?? service.imageAlt}
             flagship={service.slug === FLAGSHIP_SLUG}
+            delay={(gi * 3 + i) * 100}
+            hideDesc
           />
         ))}
       </div>

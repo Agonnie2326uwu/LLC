@@ -1,20 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #16324f;
-  --color-primary-light: #1d4168;
-  --color-accent: #3e7cb1;
-  --color-accent-hover: #346a99;
-  --color-silver: #c7cdd4;
-  --color-silver-light: #e8eaed;
-  --color-bg-alt: #f5f7f9;
-  --color-ink: #1a1a2e;
-  --color-muted: #5a6270;
-  --color-line: #d6dae0;
-  --color-footer: #0f2337;
-  --color-star: #e8a817;
+  /* Slate-teal charcoal (Image 1) + warm oat wood (Image 2) */
+  --color-primary: #2f3e46;
+  --color-primary-light: #3e535d;
+  --color-accent: #8a6642;
+  --color-accent-hover: #75563a;
+  --color-silver: #cbc0af;
+  --color-silver-light: #ede6d8;
+  --color-bg: #faf7f1;
+  --color-bg-alt: #f3ede3;
+  --color-ink: #232b30;
+  --color-muted: #5f6b72;
+  --color-line: #dcd2c0;
+  --color-footer: #212e35;
+  --color-star: #d9a441;
 
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Times New Roman", Times, Georgia, serif;
 
   --radius-card: 12px;
   --nav-height: 72px;
@@ -27,7 +29,7 @@ html {
 body {
   font-family: var(--font-sans);
   color: var(--color-ink);
-  background: #fff;
+  background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
 }
 
