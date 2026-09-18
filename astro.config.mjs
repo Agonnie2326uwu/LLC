@@ -1,11 +1,12 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
-// Preview: https://n3mo1101.github.io/LLC/
-// Production (GoDaddy, later): change base to '/' and site to 'https://luxuryduocleaning.com'
+// Preview (GitHub Pages): https://n3mo1101.github.io/LLC/  (default base '/LLC/')
+// Vercel: set env SITE_BASE='/' so the site is served from the domain root.
+// Production (GoDaddy, later): change site to 'https://luxuryduocleaning.com'
 export default defineConfig({
   site: 'https://n3mo1101.github.io',
-  base: '/LLC/',
+  base: process.env.SITE_BASE ?? '/LLC/',
   output: 'static',
   vite: {
     plugins: [tailwindcss()],
