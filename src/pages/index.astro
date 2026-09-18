@@ -55,20 +55,35 @@ const WHY_US = [
 
   <section id="why-us" class="bg-bg-alt">
     <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-      <SectionHeader
-        title="Why Choose Luxury Duo Cleaning"
-        lead="We don't just clean spaces. We build relationships with contractors, businesses, and homeowners who demand consistency."
-      />
-      <div class="mx-auto mt-10 max-w-4xl" data-reveal>
-        {WHY_US.map((item, i) => (
-          <details class="group border-b border-line py-6 first:border-t" name="why-us" open={i === 0 ? true : undefined}>
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
-              <span class="text-2xl font-bold text-ink sm:text-3xl">{item.title}</span>
-              <span aria-hidden="true" class="flex h-10 w-10 shrink-0 items-center justify-center text-3xl font-light text-ink transition-transform duration-300 group-open:rotate-45">+</span>
-            </summary>
-            <p class="mt-3 max-w-3xl text-lg leading-relaxed text-muted">{item.text}</p>
-          </details>
-        ))}
+      <div class="grid items-center gap-10 lg:grid-cols-2">
+        <div>
+          <SectionHeader
+            align="left"
+            title="Why Choose Luxury Duo Cleaning"
+            lead="We don't just clean spaces. We build relationships with contractors, businesses, and homeowners who demand consistency."
+          />
+          <div class="mt-8" data-reveal>
+            {WHY_US.map((item, i) => (
+              <details class="group border-b border-line py-6 first:border-t" name="why-us" open={i === 0 ? true : undefined}>
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+                  <span class="text-2xl font-bold text-ink sm:text-3xl">{item.title}</span>
+                  <span aria-hidden="true" class="flex h-10 w-10 shrink-0 items-center justify-center text-3xl font-light text-ink transition-transform duration-300 group-open:rotate-45">+</span>
+                </summary>
+                <p class="mt-3 max-w-3xl text-lg leading-relaxed text-muted">{item.text}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+        <div data-reveal="right">
+          <img
+            src={`${base}images/why-us.jpg`}
+            alt="Amber glass cleaning bottles and wood brush — the tools behind Luxury Duo Cleaning in Orlando FL"
+            loading="lazy"
+            width="900"
+            height="1200"
+            class="aspect-[3/4] w-full rounded-xl border border-line object-cover shadow-sm"
+          />
+        </div>
       </div>
     </div>
   </section>
