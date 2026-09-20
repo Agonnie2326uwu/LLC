@@ -33,7 +33,7 @@ const sideLinks = [
     <button
       id="menu-btn"
       type="button"
-      class="menu-bubble-btn relative z-50 mt-6 flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-white/60 bg-white/40 shadow-[0_10px_28px_rgba(62,50,38,0.18),inset_0_3px_8px_rgba(255,255,255,0.9),inset_0_-6px_12px_rgba(138,102,66,0.18)] backdrop-blur-md transition-transform hover:scale-105"
+      class="menu-bubble-btn relative z-50 mt-6 flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-ink/20 bg-[#ece2cf] shadow-[0_10px_28px_rgba(62,50,38,0.25),inset_0_3px_8px_rgba(255,255,255,0.9),inset_0_-6px_12px_rgba(138,102,66,0.25)] transition-transform hover:scale-105"
       aria-label="Open menu"
       aria-expanded="false"
       aria-controls="menu-overlay"
@@ -79,49 +79,84 @@ const sideLinks = [
 </div>
 
 <script>
-  const btn = document.getElementById('menu-btn');
-  const overlay = document.getElementById('menu-overlay');
+  // Delegated + once-guarded: survives Astro view-transition page swaps
+  // (direct bindings would point at detached nodes after navigation).
+  if (!window.__menuNavInit) {
+    window.__menuNavInit = true;
 
-  function setOpen(open) {
-    if (!btn || !overlay) return;
-    btn.setAttribute('aria-expanded', String(open));
-    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    btn.dataset.open = open ? 'true' : 'false';
-    if (open) {
-      overlay.removeAttribute('hidden');
-      requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('open')));
-      document.body.style.overflow = 'hidden';
-    } else {
-      overlay.classList.remove('open');
-      document.body.style.overflow = '';
-      setTimeout(() => {
-        if (!overlay.classList.contains('open')) overlay.setAttribute('hidden', '');
-      }, 450);
+    const getBtn = () => document.getElementById('menu-btn');
+    const getOverlay = () => document.getElementById('menu-overlay');
+
+    function setOpen(open) {
+      const btn = getBtn();
+      const overlay = getOverlay();
+      if (!btn || !overlay) return;
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      btn.dataset.open = open ? 'true' : 'false';
+      if (open) {
+        overlay.removeAttribute('hidden');
+        requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('open')));
+        document.body.style.overflow = 'hidden';
+      } else {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        setTimeout(() => {
+          const current = getOverlay();
+          if (current && !current.classList.contains('open')) current.setAttribute('hidden', '');
+        }, 450);
+      }
     }
-  }
 
-  btn?.addEventListener('click', () => {
-    const rect = btn.getBoundingClientRect();
-    const bubble = document.createElement('span');
-    bubble.className = 'menu-bubble';
-    const size = Math.max(rect.width, rect.height) * 2.6;
-    bubble.style.width = `${size}px`;
-    bubble.style.height = `${size}px`;
-    bubble.style.left = `${rect.left + rect.width / 2}px`;
-    bubble.style.top = `${rect.top + rect.height / 2}px`;
-    document.body.appendChild(bubble);
-    bubble.addEventListener('animationend', () => bubble.remove());
-    setOpen(btn.getAttribute('aria-expanded') !== 'true');
-  });
-  overlay?.querySelectorAll('a').forEach((a) => {
-    a.addEventListener('click', () => setOpen(false));
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && btn?.getAttribute('aria-expanded') === 'true') setOpen(false);
-  });
+    function popBubble(btn) {
+      const rect = btn.getBoundingClientRect();
+      const bubble = document.createElement('span');
+      bubble.className = 'menu-bubble';
+      const size = Math.max(rect.width, rect.height) * 2.6;
+      bubble.style.width = `${size}px`;
+      bubble.style.height = `${size}px`;
+      bubble.style.left = `${rect.left + rect.width / 2}px`;
+      bubble.style.top = `${rect.top + rect.height / 2}px`;
+      document.body.appendChild(bubble);
+      bubble.addEventListener('animationend', () => bubble.remove());
+    }
+
+    document.addEventListener('click', (e) => {
+      const target = e.target instanceof Element ? e.target : null;
+      if (!target) return;
+      const btn = target.closest('#menu-btn');
+      if (btn) {
+        popBubble(btn);
+        setOpen(btn.getAttribute('aria-expanded') !== 'true');
+        return;
+      }
+      if (target.closest('#menu-overlay a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && getBtn()?.getAttribute('aria-expanded') === 'true') setOpen(false);
+    });
+    // Never land on a new page with scroll locked or a stale open menu.
+    document.addEventListener('astro:page-load', () => {
+      document.body.style.overflow = '';
+      const overlay = getOverlay();
+      if (overlay) {
+        overlay.classList.remove('open');
+        overlay.setAttribute('hidden', '');
+      }
+      const btn = getBtn();
+      if (btn) {
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-label', 'Open menu');
+        btn.dataset.open = 'false';
+      }
+    });
+  }
 </script>
 
 <style>
+  #menu-overlay[hidden] {
+    display: none;
+  }
   .menu-bubble-btn::before {
     content: "";
     position: absolute;
@@ -151,10 +186,7 @@ const sideLinks = [
     }
   }
   #menu-btn[data-open="true"] {
-    border-color: rgba(255, 255, 255, 0.4);
-  }
-  #menu-btn[data-open="true"] .menu-line {
-    background: #fff;
+    border-color: rgba(38, 41, 46, 0.35);
   }
   #menu-btn[data-open="true"] .menu-line:first-child {
     top: 50%;

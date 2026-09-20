@@ -62,7 +62,7 @@ const LEAD = 3;
             width="800"
             height="1000"
             draggable="false"
-            class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            class="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent"></div>
           {service.slug === FLAGSHIP_SLUG && (
@@ -102,11 +102,16 @@ const LEAD = 3;
     let pos = lead;
 
     function step() {
+      return cachedStep;
+    }
+
+    function measure() {
       const first = slides[0];
       const second = slides[1];
       const gap = second ? second.offsetLeft - (first.offsetLeft + first.offsetWidth) : 8;
-      return first ? first.offsetWidth + gap : 0;
+      cachedStep = first ? first.offsetWidth + gap : 0;
     }
+    let cachedStep = 0;
 
     function logical() {
       return ((pos - lead) % count + count) % count;
@@ -134,21 +139,105 @@ const LEAD = 3;
       advance._t = setTimeout(settle, 650);
     }
 
-    // Drag / swipe to scroll the strip — never ending in both directions
+    // Drag / swipe to scroll the strip — never ending in both directions,
+    // with momentum glide on fast flings.
     let startX = null;
     let baseX = 0;
     let dragging = false;
+    let movedX = 0;
+    let lastX = 0;
+    let samples = [];
+    let glideId = null;
+    let suppressClick = false;
+    let captured = false;
     const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function stopGlide() {
+      if (glideId) cancelAnimationFrame(glideId);
+      glideId = null;
+    }
+    function holdRest() {
+      // Release: stay EXACTLY where dropped — no snap, no correction.
+      // Only sync bookkeeping (nearest panel + screen-reader status).
+      stopGlide();
+      track?.classList.remove('no-anim');
+      track?.classList.remove('dragging');
+      if (status) status.textContent = `Showing service ${logical() + 1} of ${count}`;
+      restart();
+    }
+    function flickVelocity() {
+      const now = performance.now();
+      const recent = samples.filter((s) => now - s.t < 120);
+      if (recent.length < 2) return 0;
+      const a = recent[0];
+      const b = recent[recent.length - 1];
+      const dt = b.t - a.t;
+      if (dt <= 0) return 0;
+      return ((b.x - a.x) / dt) * 0.9;
+    }
+    function startGlide(v0) {
+      stopGlide();
+      const st = step();
+      if (!st || !track) {
+        holdRest();
+        return;
+      }
+      let v = Math.max(-8, Math.min(8, v0));
+      let x = lastX;
+      let last = performance.now();
+      const span = count * st;
+      const lo = -(lead + count) * st;
+      const hi = -lead * st;
+      const frame = (now) => {
+        const dt = Math.min(50, now - last);
+        last = now;
+        v *= Math.pow(0.95, dt / 16.7);
+        x += v * dt;
+        while (x < lo) x += span;
+        while (x > hi) x -= span;
+        pos = Math.round(-x / st);
+        track.style.transform = `translateX(${x}px)`;
+        lastX = x;
+        if (Math.abs(v) > 0.08) {
+          glideId = requestAnimationFrame(frame);
+        } else {
+          glideId = null;
+          holdRest();
+        }
+      };
+      glideId = requestAnimationFrame(frame);
+    }
     viewport?.addEventListener('pointerdown', (e) => {
       startX = e.clientX;
       dragging = true;
-      baseX = -pos * step();
-      track?.classList.add('no-anim');
-      viewport.setPointerCapture?.(e.pointerId);
+      movedX = 0;
+      captured = false;
+      samples = [{ x: e.clientX, t: performance.now() }];
+      stopGlide();
+      measure();
+      baseX = lastX;
+      lastX = baseX;
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
     });
     viewport?.addEventListener('pointermove', (e) => {
       if (!dragging || startX === null || !track) return;
       const dx = e.clientX - startX;
+      movedX = dx;
+      if (!captured && Math.abs(dx) <= 5) return;
+      if (!captured) {
+        captured = true;
+        track?.classList.add('no-anim');
+        track?.classList.add('dragging');
+        try {
+          viewport.setPointerCapture?.(e.pointerId);
+        } catch {
+          /* ignore */
+        }
+      }
+      samples.push({ x: e.clientX, t: performance.now() });
+      if (samples.length > 8) samples.shift();
       const st = step();
       if (!st) return;
       const span = count * st;
@@ -158,18 +247,47 @@ const LEAD = 3;
       while (x < lo) x += span;
       while (x > hi) x -= span;
       pos = Math.round(-x / st);
+      lastX = x;
       track.style.transform = `translateX(${x}px)`;
     });
     function endDrag(e) {
       if (!dragging || startX === null) return;
       dragging = false;
       startX = null;
-      track?.classList.remove('no-anim');
-      place();
-      restart();
+      if (captured) {
+        captured = false;
+        try {
+          if (viewport?.hasPointerCapture?.(e.pointerId)) viewport.releasePointerCapture(e.pointerId);
+        } catch {
+          /* ignore */
+        }
+      } else {
+        // Pure tap: never hijacked — let the click (e.g. Learn more) through untouched.
+        suppressClick = false;
+        restart();
+        return;
+      }
+      suppressClick = Math.abs(movedX) > 10;
+      const v = flickVelocity();
+      if (Math.abs(v) > 0.25 && !reduceMotion()) {
+        startGlide(v);
+      } else {
+        holdRest();
+      }
     }
     viewport?.addEventListener('pointerup', endDrag);
     viewport?.addEventListener('pointercancel', endDrag);
+    viewport?.addEventListener(
+      'click',
+      (e) => {
+        if (suppressClick) {
+          e.preventDefault();
+          e.stopPropagation();
+          suppressClick = false;
+        }
+      },
+      true,
+    );
 
     // Automatic movement (paused on hover/focus, off for reduced motion)
     let timer = null;
@@ -192,10 +310,16 @@ const LEAD = 3;
     let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => place(false), 200);
+      resizeTimer = setTimeout(() => {
+        measure();
+        place(false);
+        lastX = -pos * step();
+      }, 200);
     });
 
+    measure();
     place(false);
+    lastX = -pos * step();
     restart();
   });
 </script>
@@ -206,6 +330,9 @@ const LEAD = 3;
   }
   [data-carousel="services"] [data-track].no-anim {
     transition: none !important;
+  }
+  [data-carousel="services"] [data-track].dragging img {
+    transform: none !important;
   }
   @media (prefers-reduced-motion: reduce) {
     [data-carousel="services"] [data-track] {
