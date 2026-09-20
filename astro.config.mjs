@@ -1,12 +1,12 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
-// Preview (GitHub Pages): https://n3mo1101.github.io/LLC/  (default base '/LLC/')
-// Vercel: set env SITE_BASE='/' so the site is served from the domain root.
-// (.replace() guards against stray whitespace/newlines in stored env values.)
+// Preview (GitHub Pages): https://n3mo1101.github.io/LLC/  (base '/LLC/')
+// Vercel: the platform always sets VERCEL=1 at build time, so serve from '/'.
+// (Detects the host instead of trusting a hand-typed env value.)
 export default defineConfig({
   site: 'https://n3mo1101.github.io',
-  base: (process.env.SITE_BASE ?? '/LLC/').replace(/\s+/g, '') || '/',
+  base: process.env.VERCEL ? '/' : '/LLC/',
   output: 'static',
   vite: {
     plugins: [tailwindcss()],
