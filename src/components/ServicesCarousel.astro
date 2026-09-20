@@ -45,7 +45,7 @@ const LEAD = 3;
 <div data-carousel="services">
   <div
     data-viewport
-    class="relative left-1/2 mt-6 h-[68vh] max-h-[48rem] min-h-[24rem] w-screen -translate-x-1/2 cursor-grab touch-pan-y select-none overflow-hidden sm:h-[80vh]"
+    class="relative left-1/2 mt-6 h-[55vh] max-h-[48rem] min-h-[20rem] w-screen -translate-x-1/2 cursor-grab touch-pan-y select-none overflow-hidden sm:h-[80vh]"
   >
     <div data-track class="flex h-full gap-2 will-change-transform">
       {LOOP.map(({ service, clone }, i) => (
@@ -59,6 +59,8 @@ const LEAD = 3;
             src={`${base}${HOME_IMAGES[service.slug]?.image ?? service.image}`}
             alt={clone ? '' : (HOME_IMAGES[service.slug]?.imageAlt ?? service.imageAlt)}
             loading="eager"
+            decoding="async"
+            fetchpriority={!clone && i < LEAD + 3 ? 'high' : 'auto'}
             width="800"
             height="1000"
             draggable="false"
