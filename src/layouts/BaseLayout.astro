@@ -69,15 +69,21 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'htt
     </main>
     <slot name="footer" />
     <script>
-      // Scroll reveal (Island-free, tiny inline enhancer)
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (!reduce && 'IntersectionObserver' in window) {
-        const els = document.querySelectorAll('[data-reveal]');
+      // Scroll reveal (Island-free, tiny inline enhancer).
+      // Re-runs on every view-transition navigation so swapped-in
+      // pages always reveal instead of staying invisible.
+      function initReveal() {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const els = document.querySelectorAll('[data-reveal]:not(.is-visible)');
+        if (reduce || !('IntersectionObserver' in window)) {
+          els.forEach((el) => el.classList.add('is-visible'));
+          return;
+        }
         const io = new IntersectionObserver(
           (entries) => {
             for (const e of entries) {
               if (e.isIntersecting) {
-                const el = e.target as HTMLElement;
+                const el = e.target;
                 const delay = el.getAttribute('data-reveal-delay');
                 if (delay) el.style.transitionDelay = `${Number(delay) * 80}ms`;
                 el.classList.add('is-visible');
@@ -88,9 +94,17 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'htt
           { threshold: 0.12 }
         );
         els.forEach((el) => io.observe(el));
-      } else {
-        document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-visible'));
       }
+      initReveal();
+      document.addEventListener('astro:page-load', initReveal);
     </script>
+    <noscript>
+      <style>
+        [data-reveal] {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      </style>
+    </noscript>
   </body>
 </html>
