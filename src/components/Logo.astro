@@ -1,11 +1,8 @@
 ---
 import { link, SITE_NAME } from '../lib/site';
-
-const base = import.meta.env.BASE_URL;
 ---
 
-<a href={link('/')} class="flex items-center gap-2.5" aria-label={`${SITE_NAME} — Home`}>
-  <img src={`${base}logo.svg`} alt={`${SITE_NAME} logo`} class="h-10 w-auto" loading="eager" decoding="async" />
+<a href={link('/')} aria-label={`${SITE_NAME} — Home`}>
   <span class="flex flex-col leading-none">
     <span class="text-base font-bold tracking-tight text-ink">Luxury Duo Cleaning</span>
     <span class="draft-pill mt-1 self-start" style="font-size: 0.55rem;">DRAFT LOGO</span>

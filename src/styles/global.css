@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  /* Slate-teal charcoal (Image 1) + warm oat wood (Image 2) */
-  --color-primary: #2f3e46;
-  --color-primary-light: #3e535d;
+  /* Warm beige + deep bronze (no blue) */
+  --color-primary: #5c4632;
+  --color-primary-light: #7a6248;
   --color-accent: #8a6642;
   --color-accent-hover: #75563a;
-  --color-silver: #cbc0af;
-  --color-silver-light: #ede6d8;
-  --color-bg: #faf7f1;
-  --color-bg-alt: #f3ede3;
-  --color-ink: #232b30;
-  --color-muted: #5f6b72;
-  --color-line: #dcd2c0;
-  --color-footer: #212e35;
+  --color-silver: #9eafc1;
+  --color-silver-light: #f0e9d8;
+  --color-bg: #f7f2e7;
+  --color-bg-alt: #d4bba9;
+  --color-ink: #26292e;
+  --color-muted: #6d6a61;
+  --color-line: #ddd0b8;
+  --color-footer: #3e3226;
   --color-star: #d9a441;
+  --color-hero: #2f4d63;
 
   --font-sans: "Times New Roman", Times, Georgia, serif;
 
@@ -71,7 +72,25 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .acc-panel { transition: none; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* Accordion smooth open (Why Choose) */
+.acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+details[open] .acc-panel {
+  grid-template-rows: 1fr;
+}
+.acc-panel > div {
+  overflow: hidden;
+  min-height: 0;
+}
+.no-anim .acc-panel {
+  transition: none !important;
 }
 
 /* Focus visibility */

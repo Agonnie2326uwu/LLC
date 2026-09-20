@@ -33,3 +33,4 @@ build/
 # Astro
 .astro/
 
+.vercel

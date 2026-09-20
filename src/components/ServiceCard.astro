@@ -8,35 +8,34 @@ interface Props {
   flagship?: boolean;
   delay?: number;
   hideDesc?: boolean;
+  center?: boolean;
 }
 
-const { title, desc, href, imageSrc, imageAlt, flagship = false, delay = 0, hideDesc = false } = Astro.props;
+const { title, href, imageSrc, imageAlt, flagship = false, delay = 0, center = false } = Astro.props;
 ---
 
 <article
   data-reveal
   style={`transition-delay: ${delay}ms`}
-  class={`group relative flex flex-col overflow-hidden rounded-xl border bg-white shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl ${flagship ? 'border-accent' : 'border-line'}`}
+  class={`group relative flex-1 overflow-hidden rounded-2xl shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl ${center ? 'min-h-[24rem] md:min-h-[30rem]' : 'min-h-[20rem] md:min-h-[24rem] md:mt-14'} ${flagship ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg-alt' : ''}`}
 >
   {flagship && (
     <span class="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
       Most Requested
     </span>
   )}
-  <div class="overflow-hidden">
-    <img
-      src={imageSrc}
-      alt={imageAlt}
-      loading="lazy"
-      width="600"
-      height="338"
-      class="aspect-video w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-    />
-  </div>
-  <div class="flex flex-1 flex-col gap-2 p-6">
-    <h3 class="text-3xl font-bold text-ink">{title}</h3>
-    {!hideDesc && <p class="flex-1 text-muted">{desc}</p>}
-    <a href={href} class="mt-auto inline-flex items-center gap-1 self-start pt-4 font-semibold text-accent hover:text-accent-hover hover:underline">
+  <img
+    src={imageSrc}
+    alt={imageAlt}
+    loading="lazy"
+    width="600"
+    height="800"
+    class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+  />
+  <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent"></div>
+  <div class="absolute inset-x-0 bottom-0 flex flex-col p-6">
+    <h3 class="text-2xl font-bold text-white">{title}</h3>
+    <a href={href} class="mt-2 inline-flex items-center gap-1 self-start font-semibold text-white/90 hover:text-white hover:underline">
       Learn more <span aria-hidden="true">→</span>
     </a>
   </div>

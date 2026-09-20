@@ -1,4 +1,6 @@
 ---
+import { ClientRouter } from 'astro:transitions';
+
 interface Props {
   title: string;
   description: string;
@@ -21,6 +23,38 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'htt
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <ClientRouter />
+    <style>
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation-duration: 0.45s;
+        animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      ::view-transition-old(root) {
+        animation-name: page-out;
+      }
+      ::view-transition-new(root) {
+        animation-name: page-in;
+      }
+      @keyframes page-out {
+        to {
+          opacity: 0;
+          transform: translateY(-14px);
+        }
+      }
+      @keyframes page-in {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <slot name="nav" />

@@ -1,9 +1,7 @@
 ---
 import { SERVICES, FLAGSHIP_SLUG } from '../lib/services.ts';
-import ServiceCard from './ServiceCard.astro';
 
 const base = import.meta.env.BASE_URL;
-const groups = [SERVICES.slice(0, 3), SERVICES.slice(3, 6)];
 
 // Home-only photo overrides (services page keeps the shared images from services.ts)
 const HOME_IMAGES: Record<string, { image: string; imageAlt: string }> = {
@@ -32,99 +30,185 @@ const HOME_IMAGES: Record<string, { image: string; imageAlt: string }> = {
     imageAlt: 'Hands in yellow rubber gloves with spray bottle and sponge — deep cleaning in Orlando FL',
   },
 };
+
+// Infinite loop: clones of the last 3 up front, first 3 at the end
+const LOOP = [
+  ...SERVICES.slice(-3).map((service) => ({ service, clone: true })),
+  ...SERVICES.map((service) => ({ service, clone: false })),
+  ...SERVICES.slice(0, 3).map((service) => ({ service, clone: true })),
+];
+const COUNT = SERVICES.length;
+const LEAD = 3;
+
 ---
 
-<div data-carousel="services" class="flex items-stretch gap-2 sm:gap-4">
-  <button
-    type="button"
-    data-prev
-    aria-label="Previous services"
-    class="my-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-xl text-primary shadow-sm transition hover:bg-bg-alt focus-visible:outline-accent"
+<div data-carousel="services">
+  <div
+    data-viewport
+    class="relative left-1/2 mt-6 h-[68vh] max-h-[48rem] min-h-[24rem] w-screen -translate-x-1/2 cursor-grab touch-pan-y select-none overflow-hidden sm:h-[80vh]"
   >
-    <span aria-hidden="true">←</span>
-  </button>
-
-  <div class="min-w-0 flex-1">
-    {groups.map((group, gi) => (
-      <div data-group={String(gi)} hidden={gi !== 0} class="grid gap-6 md:grid-cols-3">
-        {group.map((service, i) => (
-          <ServiceCard
-            title={service.title}
-            desc={service.desc}
-            href={`${base}services/#${service.slug}`}
-            imageSrc={`${base}${HOME_IMAGES[service.slug]?.image ?? service.image}`}
-            imageAlt={HOME_IMAGES[service.slug]?.imageAlt ?? service.imageAlt}
-            flagship={service.slug === FLAGSHIP_SLUG}
-            delay={(gi * 3 + i) * 100}
-            hideDesc
+    <div data-track class="flex h-full gap-2 will-change-transform">
+      {LOOP.map(({ service, clone }, i) => (
+        <article
+          data-slide={String(i)}
+          data-clone={clone ? 'true' : 'false'}
+          aria-hidden={clone ? 'true' : undefined}
+          class="panel group relative aspect-[3/4] h-full shrink-0 overflow-hidden"
+        >
+          <img
+            src={`${base}${HOME_IMAGES[service.slug]?.image ?? service.image}`}
+            alt={clone ? '' : (HOME_IMAGES[service.slug]?.imageAlt ?? service.imageAlt)}
+            loading="eager"
+            width="800"
+            height="1000"
+            draggable="false"
+            class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
-        ))}
-      </div>
-    ))}
-
-    <div class="mt-6 flex items-center justify-center gap-2">
-      {groups.map((_, gi) => (
-        <button
-          type="button"
-          data-dot={String(gi)}
-          aria-label={gi === 0 ? 'Show services 1-3' : 'Show services 4-6'}
-          aria-current={gi === 0 ? 'true' : undefined}
-          class={`h-3 w-3 rounded-full transition ${gi === 0 ? 'bg-primary' : 'bg-line hover:bg-silver'}`}
-        />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent"></div>
+          {service.slug === FLAGSHIP_SLUG && (
+            <span class="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
+              Most Requested
+            </span>
+          )}
+          <div class="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+            <h3 class="flex min-h-[2.4em] items-end text-2xl font-bold leading-tight text-white sm:text-3xl">{service.title}</h3>
+            <a
+              href={`${base}services/#${service.slug}`}
+              tabindex={clone ? '-1' : undefined}
+              class="mt-2 inline-flex items-center gap-1 text-lg font-semibold text-white/90 hover:text-white hover:underline"
+            >
+              Learn more <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </article>
       ))}
     </div>
-    <p data-status class="sr-only" aria-live="polite">Showing services 1–3 of 6</p>
+
   </div>
 
-  <button
-    type="button"
-    data-next
-    aria-label="Next services"
-    class="my-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-xl text-primary shadow-sm transition hover:bg-bg-alt focus-visible:outline-accent"
-  >
-    <span aria-hidden="true">→</span>
-  </button>
+  <p data-status class="sr-only" aria-live="polite">Showing service 1 of 6</p>
 </div>
 
 <script>
   const roots = document.querySelectorAll('[data-carousel="services"]');
   roots.forEach((root) => {
-    const groups = Array.from(root.querySelectorAll('[data-group]'));
-    const dots = Array.from(root.querySelectorAll('[data-dot]'));
-    const prev = root.querySelector('[data-prev]');
-    const next = root.querySelector('[data-next]');
+    const viewport = root.querySelector('[data-viewport]');
+    const track = root.querySelector('[data-track]');
+    const slides = Array.from(root.querySelectorAll('[data-slide]'));
     const status = root.querySelector('[data-status]');
-    const total = groups.length;
-    let index = 0;
+    const total = slides.length;
+    const count = total > 6 ? 6 : total;
+    const lead = Math.floor((total - count) / 2) || 0;
+    let pos = lead;
 
-    const labels = ['Showing services 1–3 of 6', 'Showing services 4–6 of 6'];
-
-    function show(i) {
-      index = ((i % total) + total) % total;
-      groups.forEach((g, gi) => {
-        if (gi === index) g.removeAttribute('hidden');
-        else g.setAttribute('hidden', '');
-      });
-      dots.forEach((d, di) => {
-        const active = di === index;
-        if (active) d.setAttribute('aria-current', 'true');
-        else d.removeAttribute('aria-current');
-        d.classList.toggle('bg-primary', active);
-        d.classList.toggle('bg-line', !active);
-      });
-      if (status) status.textContent = labels[index] ?? `Showing group ${index + 1} of ${total}`;
+    function step() {
+      const first = slides[0];
+      const second = slides[1];
+      const gap = second ? second.offsetLeft - (first.offsetLeft + first.offsetWidth) : 8;
+      return first ? first.offsetWidth + gap : 0;
     }
 
-    prev?.addEventListener('click', () => show(index - 1));
-    next?.addEventListener('click', () => show(index + 1));
-    dots.forEach((d, di) => d.addEventListener('click', () => show(di)));
-    show(0);
+    function logical() {
+      return ((pos - lead) % count + count) % count;
+    }
+
+    function place(animate = true) {
+      if (!track) return;
+      track.classList.toggle('no-anim', !animate);
+      track.style.transform = `translateX(${-pos * step()}px)`;
+      if (status) status.textContent = `Showing service ${logical() + 1} of ${count}`;
+    }
+
+    function settle() {
+      // Seamless wrap: jump back into the real range with animation off
+      if (pos < lead || pos >= lead + count) {
+        pos = lead + logical();
+        place(false);
+      }
+    }
+
+    function advance(dir, animate = true) {
+      pos += dir;
+      place(animate);
+      clearTimeout(advance._t);
+      advance._t = setTimeout(settle, 650);
+    }
+
+    // Drag / swipe to scroll the strip — never ending in both directions
+    let startX = null;
+    let baseX = 0;
+    let dragging = false;
+    const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    viewport?.addEventListener('pointerdown', (e) => {
+      startX = e.clientX;
+      dragging = true;
+      baseX = -pos * step();
+      track?.classList.add('no-anim');
+      viewport.setPointerCapture?.(e.pointerId);
+    });
+    viewport?.addEventListener('pointermove', (e) => {
+      if (!dragging || startX === null || !track) return;
+      const dx = e.clientX - startX;
+      const st = step();
+      if (!st) return;
+      const span = count * st;
+      let x = baseX + dx * 0.9;
+      const lo = -(lead + count) * st;
+      const hi = -lead * st;
+      while (x < lo) x += span;
+      while (x > hi) x -= span;
+      pos = Math.round(-x / st);
+      track.style.transform = `translateX(${x}px)`;
+    });
+    function endDrag(e) {
+      if (!dragging || startX === null) return;
+      dragging = false;
+      startX = null;
+      track?.classList.remove('no-anim');
+      place();
+      restart();
+    }
+    viewport?.addEventListener('pointerup', endDrag);
+    viewport?.addEventListener('pointercancel', endDrag);
+
+    // Automatic movement (paused on hover/focus, off for reduced motion)
+    let timer = null;
+    function restart() {
+      if (reduceMotion()) return;
+      if (timer) clearInterval(timer);
+      timer = setInterval(() => advance(1), 5000);
+    }
+    root.addEventListener('mouseenter', () => {
+      if (timer) clearInterval(timer);
+      timer = null;
+    });
+    root.addEventListener('mouseleave', restart);
+    root.addEventListener('focusin', () => {
+      if (timer) clearInterval(timer);
+      timer = null;
+    });
+    root.addEventListener('focusout', restart);
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => place(false), 200);
+    });
+
+    place(false);
+    restart();
   });
 </script>
 
 <style>
+  [data-carousel="services"] [data-track] {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [data-carousel="services"] [data-track].no-anim {
+    transition: none !important;
+  }
   @media (prefers-reduced-motion: reduce) {
-    [data-carousel="services"] [data-group] {
+    [data-carousel="services"] [data-track] {
       transition: none !important;
     }
   }

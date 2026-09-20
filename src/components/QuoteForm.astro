@@ -252,6 +252,9 @@ const errorCls = 'mt-1 text-sm text-red-600';
         if (mapped) {
           serviceSelect.value = mapped;
         }
+        const area = (params.get('area') || '').trim();
+        const cityEl = document.getElementById('quote-city');
+        if (area && cityEl && !cityEl.value) cityEl.value = area;
       }
     } catch (e) {
       /* ignore */

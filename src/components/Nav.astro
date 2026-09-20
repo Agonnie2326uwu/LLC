@@ -1,6 +1,6 @@
 ---
 import Logo from './Logo.astro';
-import { link } from '../lib/site';
+import { link, PHONE_DISPLAY, PHONE_HREF, EMAIL } from '../lib/site';
 
 const current = Astro.url.pathname;
 function normalize(p: string): string {
@@ -10,12 +10,6 @@ function normalize(p: string): string {
 function isActive(path: string): boolean {
   return normalize(current) === normalize(link(path));
 }
-function linkCls(path: string): string {
-  const base = 'rounded-md px-4 py-2 text-lg font-semibold transition-colors';
-  return isActive(path)
-    ? `${base} text-primary bg-silver-light`
-    : `${base} text-ink hover:text-primary hover:bg-bg-alt`;
-}
 
 const links = [
   { path: '/', label: 'Home' },
@@ -23,64 +17,181 @@ const links = [
   { path: '/services/', label: 'Services' },
   { path: '/contact/', label: 'Contact' },
 ];
+const sideLinks = [
+  { href: link('/quote/'), label: 'Get a Free Quote' },
+  { href: PHONE_HREF, label: PHONE_DISPLAY },
+  { href: `mailto:${EMAIL}`, label: EMAIL },
+];
 ---
 
-<header class="fixed inset-x-0 top-0 z-50 h-[var(--nav-height)] border-b border-line bg-white/90 backdrop-blur-md">
-  <nav class="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+<header>
+  <nav class="mx-auto flex h-[var(--nav-height)] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
     <div class="ml-4 sm:ml-6">
       <Logo />
     </div>
 
-    <div class="hidden items-center gap-2 md:flex">
-      {links.map((l) => (
-        <a href={link(l.path)} class={linkCls(l.path)} aria-current={isActive(l.path) ? 'page' : undefined}>
-          {l.label}
-        </a>
-      ))}
-    </div>
-
     <button
-      id="nav-toggle"
+      id="menu-btn"
       type="button"
-      class="inline-flex h-10 w-10 items-center justify-center rounded-md text-ink hover:bg-bg-alt md:hidden"
-      aria-label="Toggle navigation"
+      class="menu-bubble-btn relative z-50 mt-6 flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-white/60 bg-white/40 shadow-[0_10px_28px_rgba(62,50,38,0.18),inset_0_3px_8px_rgba(255,255,255,0.9),inset_0_-6px_12px_rgba(138,102,66,0.18)] backdrop-blur-md transition-transform hover:scale-105"
+      aria-label="Open menu"
       aria-expanded="false"
-      aria-controls="mobile-menu"
+      aria-controls="menu-overlay"
     >
-      <svg id="nav-icon-open" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-        <line x1="3" y1="6" x2="21" y2="6" />
-        <line x1="3" y1="12" x2="21" y2="12" />
-        <line x1="3" y1="18" x2="21" y2="18" />
-      </svg>
-      <svg id="nav-icon-close" class="hidden h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-        <line x1="18" y1="6" x2="6" y2="18" />
-        <line x1="6" y1="6" x2="18" y2="18" />
-      </svg>
+      <span class="relative block h-4 w-8" aria-hidden="true">
+        <span class="menu-line absolute left-0 top-0 block h-0.5 w-full bg-ink transition-all duration-300"></span>
+        <span class="menu-line absolute bottom-0 left-0 block h-0.5 w-full bg-ink transition-all duration-300"></span>
+      </span>
     </button>
   </nav>
-
-  <div id="mobile-menu" class="hidden border-t border-line bg-white px-4 pb-6 pt-2 md:hidden">
-    <div class="flex flex-col gap-1">
-      {links.map((l) => (
-        <a href={link(l.path)} class={linkCls(l.path)} aria-current={isActive(l.path) ? 'page' : undefined}>
-          {l.label}
-        </a>
-      ))}
-    </div>
-  </div>
 </header>
 
+<div
+  id="menu-overlay"
+  class="fixed inset-0 z-40 flex flex-col justify-center bg-footer text-white"
+  hidden
+>
+  <nav class="mx-auto w-full max-w-7xl px-6 sm:px-10" aria-label="Fullscreen menu">
+    <ul class="flex flex-col gap-1 sm:gap-2">
+      {links.map((l, i) => (
+        <li class="menu-item" style={`--d:${120 + i * 80}ms`}>
+          <a
+            href={link(l.path)}
+            aria-current={isActive(l.path) ? 'page' : undefined}
+            class={`group inline-flex items-baseline gap-4 text-5xl font-bold tracking-tight transition-colors hover:text-silver sm:text-7xl ${isActive(l.path) ? 'text-star' : ''}`}
+          >
+            <span class="text-sm font-bold tracking-[0.2em] text-white/50">0{i + 1}</span>
+            {l.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+    <ul class="mt-10 flex flex-col gap-2 sm:mt-14">
+      {sideLinks.map((l, i) => (
+        <li class="menu-item" style={`--d:${440 + i * 80}ms`}>
+          <a href={l.href} class="text-lg font-semibold text-white/70 transition-colors hover:text-white">
+            {l.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</div>
+
 <script>
-  const toggle = document.getElementById('nav-toggle');
-  const menu = document.getElementById('mobile-menu');
-  const iconOpen = document.getElementById('nav-icon-open');
-  const iconClose = document.getElementById('nav-icon-close');
-  toggle?.addEventListener('click', () => {
-    const expanded = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!expanded));
-    menu?.classList.toggle('hidden', expanded);
-    iconOpen?.classList.toggle('hidden', !expanded);
-    iconClose?.classList.toggle('hidden', expanded);
-    document.body.style.overflow = expanded ? '' : 'hidden';
+  const btn = document.getElementById('menu-btn');
+  const overlay = document.getElementById('menu-overlay');
+
+  function setOpen(open) {
+    if (!btn || !overlay) return;
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    btn.dataset.open = open ? 'true' : 'false';
+    if (open) {
+      overlay.removeAttribute('hidden');
+      requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('open')));
+      document.body.style.overflow = 'hidden';
+    } else {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        if (!overlay.classList.contains('open')) overlay.setAttribute('hidden', '');
+      }, 450);
+    }
+  }
+
+  btn?.addEventListener('click', () => {
+    const rect = btn.getBoundingClientRect();
+    const bubble = document.createElement('span');
+    bubble.className = 'menu-bubble';
+    const size = Math.max(rect.width, rect.height) * 2.6;
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+    bubble.style.left = `${rect.left + rect.width / 2}px`;
+    bubble.style.top = `${rect.top + rect.height / 2}px`;
+    document.body.appendChild(bubble);
+    bubble.addEventListener('animationend', () => bubble.remove());
+    setOpen(btn.getAttribute('aria-expanded') !== 'true');
+  });
+  overlay?.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => setOpen(false));
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && btn?.getAttribute('aria-expanded') === 'true') setOpen(false);
   });
 </script>
+
+<style>
+  .menu-bubble-btn::before {
+    content: "";
+    position: absolute;
+    left: 18%;
+    top: 12%;
+    width: 34%;
+    height: 22%;
+    border-radius: 9999px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+    transform: rotate(-18deg);
+    pointer-events: none;
+  }
+  .menu-bubble {
+    position: fixed;
+    z-index: 60;
+    border-radius: 9999px;
+    background: var(--color-accent);
+    opacity: 0.35;
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+    animation: bubble-pop 0.7s ease-out forwards;
+  }
+  @keyframes bubble-pop {
+    to {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0;
+    }
+  }
+  #menu-btn[data-open="true"] {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  #menu-btn[data-open="true"] .menu-line {
+    background: #fff;
+  }
+  #menu-btn[data-open="true"] .menu-line:first-child {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+  #menu-btn[data-open="true"] .menu-line:last-child {
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%) rotate(-45deg);
+  }
+  #menu-overlay {
+    clip-path: circle(0px at calc(100% - 3.5rem) 3.5rem);
+    transition: clip-path 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    visibility: hidden;
+  }
+  #menu-overlay.open {
+    clip-path: circle(150% at calc(100% - 3.5rem) 3.5rem);
+    visibility: visible;
+  }
+  #menu-overlay .menu-item {
+    opacity: 0;
+    transform: translateY(1.75rem);
+    transition:
+      opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: 0ms;
+  }
+  #menu-overlay.open .menu-item {
+    opacity: 1;
+    transform: none;
+    transition-delay: var(--d, 0ms);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #menu-overlay,
+    #menu-overlay .menu-item,
+    #menu-btn .menu-line {
+      transition: none !important;
+    }
+  }
+</style>

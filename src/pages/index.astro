@@ -2,24 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
-import Footer from '../components/Footer.astro';
 import Hero from '../components/Hero.astro';
-import TrustBar from '../components/TrustBar.astro';
-import SectionHeader from '../components/SectionHeader.astro';
-import ServicesCarousel from '../components/ServicesCarousel.astro';
-import TestimonialsCarousel from '../components/TestimonialsCarousel.astro';
-import MapPlaceholder from '../components/MapPlaceholder.astro';
-import CtaBand from '../components/CtaBand.astro';
-import { link, PHONE_HREF } from '../lib/site';
-
-const base = import.meta.env.BASE_URL;
-
-const WHY_US = [
-  { title: 'Attention to Detail', text: "Every corner, every surface, every edge. We clean like it's our own space." },
-  { title: 'On-Time, Every Time', text: 'Contractor-friendly scheduling. We show up when we say we will.' },
-  { title: 'Insured & Professional', text: 'Fully licensed and insured. A background-checked team you can trust on any job site.' },
-  { title: 'Fast Response Times', text: 'Quotes within hours, not days. We move at your pace.' },
-];
 ---
 
 <BaseLayout
@@ -29,113 +12,7 @@ const WHY_US = [
   <Nav slot="nav" />
 
   <Hero
-    eyebrow="Orlando's Trusted Cleaning Partner"
     title="Precision Cleaning. Zero Shortcuts."
-    primaryHref={link('/quote/')}
-    primaryLabel="Request a Free Quote"
-    secondaryHref={PHONE_HREF}
-    secondaryLabel="Call Now"
-    imageSrc={`${base}images/hero-cleaning.jpg`}
-    imageAlt="Amber glass cleaning spray bottles and wood brush — eco cleaning supplies by Luxury Duo Cleaning Orlando FL"
+    subtitle="Professional Cleaning Services — Orlando, FL"
   />
-
-  <TrustBar />
-
-  <section id="services" class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-    <div data-reveal>
-      <SectionHeader
-        title="Our Services"
-        lead="From post-construction sites to vacation rentals, we deliver spotless results every time."
-      />
-    </div>
-    <div class="mt-10" data-reveal>
-      <ServicesCarousel />
-    </div>
-  </section>
-
-  <section id="why-us" class="bg-bg-alt">
-    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-      <div class="grid items-center gap-10 lg:grid-cols-2">
-        <div>
-          <SectionHeader
-            align="left"
-            title="Why Choose Luxury Duo Cleaning"
-            lead="We don't just clean spaces. We build relationships with contractors, businesses, and homeowners who demand consistency."
-          />
-          <div class="mt-8" data-reveal>
-            {WHY_US.map((item, i) => (
-              <details class="group border-b border-line py-6 first:border-t" name="why-us" open={i === 0 ? true : undefined}>
-                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
-                  <span class="text-2xl font-bold text-ink sm:text-3xl">{item.title}</span>
-                  <span aria-hidden="true" class="flex h-10 w-10 shrink-0 items-center justify-center text-3xl font-light text-ink transition-transform duration-300 group-open:rotate-45">+</span>
-                </summary>
-                <p class="mt-3 max-w-3xl text-lg leading-relaxed text-muted">{item.text}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-        <div data-reveal="right">
-          <img
-            src={`${base}images/why-us.jpg`}
-            alt="Two-person cleaning crew wiping down a table — Luxury Duo Cleaning at work in Orlando FL"
-            loading="lazy"
-            width="626"
-            height="417"
-            class="aspect-[3/2] w-full rounded-xl border border-line object-cover shadow-sm"
-          />
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="testimonials" class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-    <div data-reveal>
-      <SectionHeader
-        title="What Our Clients Say"
-        lead="Trusted by contractors, property managers, and homeowners across Orlando."
-      />
-    </div>
-    <div class="mt-4 flex justify-center" data-reveal>
-      <span class="draft-pill">Sample copy — will use Google reviews</span>
-    </div>
-    <div class="mt-8" data-reveal>
-      <TestimonialsCarousel />
-    </div>
-  </section>
-
-  <section id="service-area" class="bg-bg-alt">
-    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-      <SectionHeader
-        title="Service Area"
-        lead="Proudly serving Orlando and the surrounding areas throughout Central Florida."
-      />
-      <div class="mt-10 grid items-start gap-8 lg:grid-cols-2">
-        <MapPlaceholder
-          title="Service Area Map"
-          text="Google Maps — Orlando, FL service area"
-        />
-        <div data-reveal>
-          <h3 class="text-xl font-bold text-ink">Areas We Serve</h3>
-          <p class="mt-3 leading-relaxed text-muted">
-            Winter Park, Kissimmee, Lake Nona, Altamonte Springs, Apopka,
-            Sanford, Oviedo, Maitland, Casselberry, Ocoee, Windermere, Lake Mary
-          </p>
-          <p class="mt-3 leading-relaxed text-muted">
-            Don't see your neighborhood? Reach out — if you're in Central
-            Florida, we'll do our best to fit you in.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <CtaBand
-    title="Ready to Work with Orlando's Most Detail-Oriented Cleaners?"
-    primaryHref={link('/quote/')}
-    primaryLabel="Request a Free Quote"
-    secondaryHref={PHONE_HREF}
-    secondaryLabel="Call Now"
-  />
-
-  <Footer slot="footer" />
 </BaseLayout>
