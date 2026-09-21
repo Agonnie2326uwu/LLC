@@ -6,27 +6,27 @@ const base = import.meta.env.BASE_URL;
 // Home-only photo overrides (services page keeps the shared images from services.ts)
 const HOME_IMAGES: Record<string, { image: string; imageAlt: string }> = {
   construction: {
-    image: 'images/services/home-construction.jpg',
+    image: 'images/services/home-construction.webp',
     imageAlt: 'Crew in hard hats detailing windows and floors — post-construction cleaning in Orlando FL',
   },
   commercial: {
-    image: 'images/services/home-commercial.jpg',
+    image: 'images/services/home-commercial.webp',
     imageAlt: 'Cleaning team vacuuming and mopping an office — commercial cleaning in Orlando FL',
   },
   residential: {
-    image: 'images/services/home-residential.jpg',
+    image: 'images/services/home-residential.webp',
     imageAlt: 'Broom sweeping a wood floor — residential cleaning in Orlando FL',
   },
   airbnb: {
-    image: 'images/services/home-airbnb.jpg',
+    image: 'images/services/home-airbnb.webp',
     imageAlt: 'Cleaner carrying a caddy of spray bottles — Airbnb turnover cleaning in Orlando FL',
   },
   movein: {
-    image: 'images/services/home-movein.jpg',
+    image: 'images/services/home-movein.webp',
     imageAlt: 'Moving boxes with a broom ready — move-in move-out cleaning in Orlando FL',
   },
   deep: {
-    image: 'images/services/home-deep.jpg',
+    image: 'images/services/home-deep.webp',
     imageAlt: 'Hands in yellow rubber gloves with spray bottle and sponge — deep cleaning in Orlando FL',
   },
 };
@@ -39,7 +39,6 @@ const LOOP = [
 ];
 const COUNT = SERVICES.length;
 const LEAD = 3;
-
 ---
 
 <div data-carousel="services">
@@ -59,7 +58,7 @@ const LEAD = 3;
             src={`${base}${HOME_IMAGES[service.slug]?.image ?? service.image}`}
             alt={clone ? '' : (HOME_IMAGES[service.slug]?.imageAlt ?? service.imageAlt)}
             loading="eager"
-            decoding="async"
+            decoding={!clone && i >= LEAD && i < LEAD + 3 ? 'sync' : 'async'}
             fetchpriority={!clone && i < LEAD + 3 ? 'high' : 'auto'}
             width="800"
             height="1000"
@@ -85,15 +84,20 @@ const LEAD = 3;
         </article>
       ))}
     </div>
-
   </div>
 
   <p data-status class="sr-only" aria-live="polite">Showing service 1 of 6</p>
 </div>
 
 <script>
-  const roots = document.querySelectorAll('[data-carousel="services"]');
-  roots.forEach((root) => {
+  // Idempotent init: re-runs on every view-transition navigation (including
+  // back-to-Home). Stale runs detect a newer run id and shut themselves down.
+  function initCarousel() {
+  document.querySelectorAll('[data-carousel="services"]').forEach((root) => {
+    const run = (root.__crun || 0) + 1;
+    root.__crun = run;
+    const alive = () => root.__crun === run;
+
     const viewport = root.querySelector('[data-viewport]');
     const track = root.querySelector('[data-track]');
     const slides = Array.from(root.querySelectorAll('[data-slide]'));
@@ -135,14 +139,17 @@ const LEAD = 3;
     }
 
     function advance(dir, animate = true) {
+      if (!alive()) return;
       pos += dir;
       place(animate);
       clearTimeout(advance._t);
-      advance._t = setTimeout(settle, 650);
+      advance._t = setTimeout(() => {
+        if (alive()) settle();
+      }, 650);
     }
 
     // Drag / swipe to scroll the strip — never ending in both directions,
-    // with momentum glide on fast flings.
+    // with momentum glide on fast flings. Release: stay where dropped.
     let startX = null;
     let baseX = 0;
     let dragging = false;
@@ -159,7 +166,6 @@ const LEAD = 3;
     }
     function holdRest() {
       // Release: stay EXACTLY where dropped — no snap, no correction.
-      // Only sync bookkeeping (nearest panel + screen-reader status).
       stopGlide();
       track?.classList.remove('no-anim');
       track?.classList.remove('dragging');
@@ -190,6 +196,10 @@ const LEAD = 3;
       const lo = -(lead + count) * st;
       const hi = -lead * st;
       const frame = (now) => {
+        if (!alive()) {
+          glideId = null;
+          return;
+        }
         const dt = Math.min(50, now - last);
         last = now;
         v *= Math.pow(0.95, dt / 16.7);
@@ -209,6 +219,7 @@ const LEAD = 3;
       glideId = requestAnimationFrame(frame);
     }
     viewport?.addEventListener('pointerdown', (e) => {
+      if (!alive()) return;
       startX = e.clientX;
       dragging = true;
       movedX = 0;
@@ -217,14 +228,13 @@ const LEAD = 3;
       stopGlide();
       measure();
       baseX = lastX;
-      lastX = baseX;
       if (timer) {
         clearInterval(timer);
         timer = null;
       }
     });
     viewport?.addEventListener('pointermove', (e) => {
-      if (!dragging || startX === null || !track) return;
+      if (!alive() || !dragging || startX === null || !track) return;
       const dx = e.clientX - startX;
       movedX = dx;
       if (!captured && Math.abs(dx) <= 5) return;
@@ -253,7 +263,7 @@ const LEAD = 3;
       track.style.transform = `translateX(${x}px)`;
     });
     function endDrag(e) {
-      if (!dragging || startX === null) return;
+      if (!alive() || !dragging || startX === null) return;
       dragging = false;
       startX = null;
       if (captured) {
@@ -294,9 +304,16 @@ const LEAD = 3;
     // Automatic movement (paused on hover/focus, off for reduced motion)
     let timer = null;
     function restart() {
-      if (reduceMotion()) return;
+      if (!alive() || reduceMotion()) return;
       if (timer) clearInterval(timer);
-      timer = setInterval(() => advance(1), 5000);
+      timer = setInterval(() => {
+        if (!alive()) {
+          clearInterval(timer);
+          timer = null;
+          return;
+        }
+        advance(1);
+      }, 5000);
     }
     root.addEventListener('mouseenter', () => {
       if (timer) clearInterval(timer);
@@ -311,8 +328,10 @@ const LEAD = 3;
 
     let resizeTimer;
     window.addEventListener('resize', () => {
+      if (!alive()) return;
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
+        if (!alive()) return;
         measure();
         place(false);
         lastX = -pos * step();
@@ -324,6 +343,9 @@ const LEAD = 3;
     lastX = -pos * step();
     restart();
   });
+  }
+  initCarousel();
+  document.addEventListener('astro:page-load', initCarousel);
 </script>
 
 <style>

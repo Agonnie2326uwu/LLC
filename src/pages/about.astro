@@ -7,9 +7,6 @@ import PageHero from '../components/PageHero.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import Stat from '../components/Stat.astro';
 import RoundCarousel from '../components/RoundCarousel.astro';
-import ImageSlot from '../components/ImageSlot.astro';
-import CtaBand from '../components/CtaBand.astro';
-import { link } from '../lib/site';
 
 const base = import.meta.env.BASE_URL;
 ---
@@ -56,33 +53,16 @@ const base = import.meta.env.BASE_URL;
         lead="Three principles that drive every job we take on."
       />
       <div class="mt-10 grid gap-6 md:grid-cols-3">
-        <article class="rounded-xl border border-line bg-white p-6 shadow-sm" data-reveal>
-          <span class="flex h-12 w-12 items-center justify-center rounded-full bg-bg-alt text-accent" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </svg>
-          </span>
-          <h3 class="mt-4 text-xl font-bold text-ink">Efficiency</h3>
+        <article class="rounded-xl border border-line bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md" data-reveal data-reveal-delay="0">
+          <h3 class="text-xl font-bold text-ink">Efficiency</h3>
           <p class="mt-2 text-muted">We work fast without cutting corners. Contractor schedules don't wait, and neither do we. Every minute on-site is purposeful.</p>
         </article>
-        <article class="rounded-xl border border-line bg-white p-6 shadow-sm" data-reveal>
-          <span class="flex h-12 w-12 items-center justify-center rounded-full bg-bg-alt text-accent" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-          </span>
-          <h3 class="mt-4 text-xl font-bold text-ink">Reliability</h3>
+        <article class="rounded-xl border border-line bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md" data-reveal data-reveal-delay="1">
+          <h3 class="text-xl font-bold text-ink">Reliability</h3>
           <p class="mt-2 text-muted">We show up when we say we will. Consistent scheduling, consistent quality, consistent communication. No surprises.</p>
         </article>
-        <article class="rounded-xl border border-line bg-white p-6 shadow-sm" data-reveal>
-          <span class="flex h-12 w-12 items-center justify-center rounded-full bg-bg-alt text-accent" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </span>
-          <h3 class="mt-4 text-xl font-bold text-ink">Attention to Detail</h3>
+        <article class="rounded-xl border border-line bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md" data-reveal data-reveal-delay="2">
+          <h3 class="text-xl font-bold text-ink">Attention to Detail</h3>
           <p class="mt-2 text-muted">We notice what others overlook. Baseboards, window tracks, grout lines — the details that make a space actually clean, not just tidy.</p>
         </article>
       </div>
@@ -107,43 +87,38 @@ const base = import.meta.env.BASE_URL;
       />
       <div class="mt-10 grid items-center gap-10 lg:grid-cols-2">
         <div data-reveal>
-          <p class="text-lg leading-relaxed text-muted">
+          <p class="text-xl font-semibold leading-relaxed text-ink sm:text-2xl">
             Luxury Duo Cleaning LLC was started with a simple belief: that
             cleaning is a service business, and service means showing up,
             doing the work right, and earning the next job.
           </p>
-          <p class="mt-4 leading-relaxed text-muted">
+          <p class="mt-4 text-xl leading-relaxed text-ink">
             Based in Orlando, we started serving residential clients and
             quickly expanded into commercial and construction cleaning as
             contractors recognized the quality of our work. Today, we serve
             general contractors, property managers, Airbnb hosts, and
             homeowners across the greater Orlando area.
           </p>
-          <p class="mt-4 leading-relaxed text-muted">
+          <p class="mt-4 text-xl leading-relaxed text-ink">
             We're still growing, and we're still hands-on. Every job gets the
             same attention to detail whether it's a single-family home or a
             large commercial buildout.
           </p>
         </div>
-        <div data-reveal="right">
-          <ImageSlot
-            slotId="team-photo"
-            src={`${base}draft/team.svg`}
-            alt="Luxury Duo Cleaning team serving Orlando FL"
-            aspect="4/3"
+        <figure data-reveal="right" class="group overflow-hidden rounded-xl border border-line shadow-sm">
+          <img
+            src={`${base}images/why-us.jpg`}
+            alt="Two-person Luxury Duo Cleaning crew wiping down a table in Orlando FL"
+            loading="lazy"
+            decoding="async"
+            width="626"
+            height="417"
+            class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
-        </div>
+        </figure>
       </div>
     </div>
   </section>
-
-  <CtaBand
-    title="Let's Work Together"
-    primaryHref={link('/quote/')}
-    primaryLabel="Request a Free Quote"
-    secondaryHref={link('/contact/')}
-    secondaryLabel="Get in Touch"
-  />
 
   <Footer slot="footer" />
 </BaseLayout>

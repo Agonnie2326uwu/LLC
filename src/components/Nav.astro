@@ -33,7 +33,7 @@ const sideLinks = [
     <button
       id="menu-btn"
       type="button"
-      class="menu-bubble-btn relative z-50 mt-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-ink/20 bg-[#ece2cf] shadow-[0_10px_28px_rgba(62,50,38,0.25),inset_0_3px_8px_rgba(255,255,255,0.9),inset_0_-6px_12px_rgba(138,102,66,0.25)] transition-transform hover:scale-105 sm:h-20 sm:w-20"
+      class="menu-bubble-btn relative z-50 mt-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-ink/20 bg-[#ece2cf] shadow-[0_10px_28px_rgba(38,41,46,0.25),inset_0_3px_8px_rgba(255,255,255,0.9),inset_0_-6px_12px_rgba(38,41,46,0.18)] transition-transform hover:scale-105 sm:h-20 sm:w-20"
       aria-label="Open menu"
       aria-expanded="false"
       aria-controls="menu-overlay"
@@ -51,17 +51,17 @@ const sideLinks = [
   class="fixed inset-0 z-40 flex flex-col justify-center bg-footer text-white"
   hidden
 >
-  <nav class="mx-auto w-full max-w-7xl px-6 sm:px-10" aria-label="Fullscreen menu">
+  <div id="menu-bubbles" class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true"></div>
+  <nav class="relative mx-auto w-full max-w-7xl px-6 sm:px-10" aria-label="Fullscreen menu">
     <ul class="flex flex-col gap-1 sm:gap-2">
       {links.map((l, i) => (
         <li class="menu-item" style={`--d:${120 + i * 80}ms`}>
           <a
             href={link(l.path)}
             aria-current={isActive(l.path) ? 'page' : undefined}
-            class={`group inline-flex items-baseline gap-4 text-4xl font-bold tracking-tight transition-colors hover:text-silver sm:text-7xl ${isActive(l.path) ? 'text-star' : ''}`}
+            class={`inline-flex text-4xl font-bold tracking-tight transition-colors hover:text-silver sm:text-7xl ${isActive(l.path) ? 'text-star' : ''}`}
           >
-            <span class="text-sm font-bold tracking-[0.2em] text-white/50">0{i + 1}</span>
-            {l.label}
+            <span class="menu-link-label">{l.label}</span>
           </a>
         </li>
       ))}
@@ -98,14 +98,62 @@ const sideLinks = [
         overlay.removeAttribute('hidden');
         requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('open')));
         document.body.style.overflow = 'hidden';
+        startBubbles();
       } else {
         overlay.classList.remove('open');
         document.body.style.overflow = '';
+        stopBubbles();
         setTimeout(() => {
           const current = getOverlay();
           if (current && !current.classList.contains('open')) current.setAttribute('hidden', '');
         }, 450);
       }
+    }
+
+    let bubbleTimer = null;
+    function stopBubbles() {
+      if (bubbleTimer) {
+        clearInterval(bubbleTimer);
+        bubbleTimer = null;
+      }
+      getOverlay()?.querySelector('#menu-bubbles')?.replaceChildren();
+    }
+    function popBubbleEl(b) {
+      if (!b || b.dataset.popped) return;
+      b.dataset.popped = '1';
+      const r = b.getBoundingClientRect();
+      b.style.position = 'fixed';
+      b.style.left = `${r.left}px`;
+      b.style.top = `${r.top}px`;
+      b.style.bottom = 'auto';
+      b.style.animation = 'none';
+      void b.offsetWidth;
+      b.classList.add('popped');
+      b.addEventListener('animationend', () => b.remove(), { once: true });
+    }
+    function startBubbles() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      stopBubbles();
+      const layer = getOverlay()?.querySelector('#menu-bubbles');
+      if (!layer) return;
+      const spawn = () => {
+        if (layer.childElementCount >= 24) return;
+        const b = document.createElement('span');
+        const size = 8 + Math.random() * 34;
+        b.style.width = `${size}px`;
+        b.style.height = `${size}px`;
+        b.style.left = `${Math.random() * 100}%`;
+        b.style.animationDuration = `${6 + Math.random() * 6}s`;
+        b.addEventListener('pointerenter', () => popBubbleEl(b));
+        b.addEventListener('click', () => popBubbleEl(b));
+        b.addEventListener('animationend', () => {
+          if (!b.dataset.popped) b.remove();
+        });
+        layer.appendChild(b);
+      };
+      spawn();
+      spawn();
+      bubbleTimer = setInterval(spawn, 550);
     }
 
     function popBubble(btn) {
@@ -156,6 +204,59 @@ const sideLinks = [
 <style>
   #menu-overlay[hidden] {
     display: none;
+  }
+  #menu-bubbles span {
+    position: absolute;
+    bottom: -70px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.06) 62%);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    pointer-events: auto;
+    cursor: pointer;
+    animation-name: bubble-rise;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+  @keyframes bubble-rise {
+    to {
+      transform: translateY(-115vh);
+    }
+  }
+  #menu-bubbles span.popped {
+    animation: bubble-pop 0.22s ease-out forwards;
+  }
+  @keyframes bubble-pop {
+    to {
+      transform: scale(1.9);
+      opacity: 0;
+    }
+  }
+  #menu-overlay .menu-link-label {
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 6px;
+  }
+  #menu-overlay .menu-link-label::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: currentColor;
+    transform: translateX(-101%);
+  }
+  #menu-overlay a:hover .menu-link-label::after {
+    animation: underline-travel 1s linear infinite;
+  }
+  @keyframes underline-travel {
+    from {
+      transform: translateX(-101%);
+    }
+    to {
+      transform: translateX(101%);
+    }
   }
   .menu-bubble-btn::before {
     content: "";
@@ -222,8 +323,11 @@ const sideLinks = [
   @media (prefers-reduced-motion: reduce) {
     #menu-overlay,
     #menu-overlay .menu-item,
+    #menu-overlay .menu-link-label::after,
+    #menu-bubbles span,
     #menu-btn .menu-line {
       transition: none !important;
+      animation: none !important;
     }
   }
 </style>

@@ -8,6 +8,43 @@ const { value, label } = Astro.props;
 ---
 
 <div class="text-center" data-reveal>
-  <div class="text-4xl font-bold tracking-tight text-primary sm:text-5xl">{value}</div>
+  <div class="text-4xl font-bold tracking-tight text-primary sm:text-5xl" data-stat={value}>{value}</div>
   <div class="mt-2 text-sm font-semibold uppercase tracking-wider text-muted">{label}</div>
 </div>
+
+<script>
+  function initStats() {
+    document.querySelectorAll('[data-stat]:not([data-done])').forEach((el) => {
+      const m = /^(\d+)(.*)$/.exec(el.dataset.stat || '');
+      if (!m) return;
+      el.dataset.done = 'true';
+      const target = Number(m[1]);
+      const suffix = m[2];
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const dur = 1300;
+      let started = false;
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && !started) {
+              started = true;
+              io.disconnect();
+              const t0 = performance.now();
+              const tick = (t) => {
+                const p = Math.min(1, (t - t0) / dur);
+                const eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.round(target * eased) + suffix;
+                if (p < 1) requestAnimationFrame(tick);
+              };
+              requestAnimationFrame(tick);
+            }
+          });
+        },
+        { threshold: 0.4 },
+      );
+      io.observe(el);
+    });
+  }
+  initStats();
+  document.addEventListener('astro:page-load', initStats);
+</script>

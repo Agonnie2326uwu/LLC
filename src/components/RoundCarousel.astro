@@ -2,45 +2,52 @@
 import { SERVICES } from '../lib/services.ts';
 
 const base = import.meta.env.BASE_URL;
+
+// Infinite loop: clones of the last 2 up front, first 2 at the end
+const LOOP = [
+  ...SERVICES.slice(-2).map((service) => ({ service, clone: true })),
+  ...SERVICES.map((service) => ({ service, clone: false })),
+  ...SERVICES.slice(0, 2).map((service) => ({ service, clone: true })),
+];
+const COUNT = SERVICES.length;
+const LEAD = 2;
 ---
 
 <div data-carousel="round" class="flex items-center gap-2 sm:gap-4">
-  <button
-    type="button"
-    data-prev
-    aria-label="Previous service"
-    class="my-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-xl text-primary shadow-sm transition hover:bg-bg-alt"
-  >
-    <span aria-hidden="true">←</span>
-  </button>
-
   <div class="min-w-0 flex-1">
-    <div data-track class="flex items-center justify-center gap-4 sm:gap-6">
-      {SERVICES.map((service, i) => (
-        <article
-          data-slide={String(i)}
-          data-reveal
-          class="flex w-40 shrink-0 flex-col items-center gap-3 rounded-xl border border-line bg-white p-4 text-center shadow-sm transition-all duration-300 sm:w-52"
-        >
-          <img
-            src={`${base}${service.image}`}
-            alt={service.imageAlt}
-            loading="lazy"
-            width="160"
-            height="160"
-            class="aspect-square h-24 w-24 rounded-full object-cover sm:h-32 sm:w-32"
-          />
-          <h3 class="text-sm font-bold text-ink sm:text-base">{service.title}</h3>
-          <a
-            href={`${base}services/#${service.slug}`}
-            class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:text-accent-hover hover:underline"
-            tabindex="-1"
-            data-link
+    <div
+      data-viewport
+      class="cursor-grab touch-pan-y select-none overflow-hidden"
+    >
+      <div data-track class="flex items-stretch gap-6 will-change-transform">
+        {LOOP.map(({ service, clone }, i) => (
+          <article
+            data-slide={String(i)}
+            data-clone={clone ? 'true' : 'false'}
+            aria-hidden={clone ? 'true' : undefined}
+            class="flex w-56 shrink-0 flex-col items-center gap-3 rounded-xl border border-line bg-white p-4 text-center shadow-sm sm:w-72"
           >
-            Learn more <span aria-hidden="true">→</span>
-          </a>
-        </article>
-      ))}
+            <img
+              src={`${base}${service.image}`}
+              alt={clone ? '' : service.imageAlt}
+              loading="eager"
+              decoding="async"
+              width="288"
+              height="288"
+              draggable="false"
+              class="pointer-events-none aspect-square h-32 w-32 rounded-full object-cover sm:h-44 sm:w-44"
+            />
+            <h3 class="text-sm font-bold text-ink sm:text-base">{service.title}</h3>
+            <a
+              href={`${base}services/#${service.slug}`}
+              tabindex={clone ? '-1' : undefined}
+              class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:text-accent-hover hover:underline"
+            >
+              Learn more <span aria-hidden="true">→</span>
+            </a>
+          </article>
+        ))}
+      </div>
     </div>
 
     <div class="mt-6 flex items-center justify-center gap-2">
@@ -56,73 +63,291 @@ const base = import.meta.env.BASE_URL;
     </div>
     <p data-status class="sr-only" aria-live="polite">Showing 1 of 6</p>
   </div>
-
-  <button
-    type="button"
-    data-next
-    aria-label="Next service"
-    class="my-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-xl text-primary shadow-sm transition hover:bg-bg-alt"
-  >
-    <span aria-hidden="true">→</span>
-  </button>
 </div>
 
 <script>
-  const roots = document.querySelectorAll('[data-carousel="round"]');
-  roots.forEach((root) => {
-    const slides = Array.from(root.querySelectorAll('[data-slide]')) as HTMLElement[];
+  // Same infinite drag engine as the home strip: unbounded position with
+  // clone padding on both ends, momentum flings, autoplay, snap-free release.
+  function initRound() {
+  document.querySelectorAll('[data-carousel="round"]').forEach((root) => {
+    const run = (root.__rrun || 0) + 1;
+    root.__rrun = run;
+    const alive = () => root.__rrun === run;
+
+    const viewport = root.querySelector('[data-viewport]');
+    const track = root.querySelector('[data-track]');
+    const slides = Array.from(root.querySelectorAll('[data-slide]'));
     const dots = Array.from(root.querySelectorAll('[data-dot]'));
-    const prev = root.querySelector('[data-prev]');
-    const next = root.querySelector('[data-next]');
     const status = root.querySelector('[data-status]');
     const total = slides.length;
-    let active = 0;
+    const count = total > 6 ? 6 : total;
+    const lead = Math.floor((total - count) / 2) || 0;
+    let pos = lead;
 
-    function show(i) {
-      active = ((i % total) + total) % total;
-      const visible = new Set([
-        ((active - 1) + total) % total,
-        active,
-        (active + 1) % total,
-      ]);
-      slides.forEach((slide, si) => {
-        const isActive = si === active;
-        const isVisible = visible.has(si);
-        slide.toggleAttribute('hidden', !isVisible);
-        slide.classList.toggle('scale-100', isActive);
-        slide.classList.toggle('opacity-100', isActive);
-        slide.classList.toggle('scale-90', !isActive);
-        slide.classList.toggle('opacity-80', !isActive);
-        slide.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
-        const link = slide.querySelector('[data-link]');
-        if (link) {
-          if (isActive) link.removeAttribute('tabindex');
-          else link.setAttribute('tabindex', '-1');
-        }
-      });
+    function step() {
+      return cachedStep;
+    }
+    function measure() {
+      const first = slides[0];
+      const second = slides[1];
+      const gap = second ? second.offsetLeft - (first.offsetLeft + first.offsetWidth) : 24;
+      cachedStep = first ? first.offsetWidth + gap : 0;
+    }
+    let cachedStep = 0;
+
+    function logical() {
+      return ((pos - lead) % count + count) % count;
+    }
+
+    function syncChrome() {
+      const li = logical();
       dots.forEach((d, di) => {
-        const on = di === active;
+        const on = di === li;
         if (on) d.setAttribute('aria-current', 'true');
         else d.removeAttribute('aria-current');
         d.classList.toggle('bg-primary', on);
         d.classList.toggle('bg-line', !on);
       });
-      if (status) {
-        const title = slides[active]?.querySelector('h3')?.textContent?.trim() ?? `Service ${active + 1}`;
-        status.textContent = `Showing ${active + 1} of ${total}: ${title}`;
+      if (status) status.textContent = `Showing ${li + 1} of ${count}`;
+    }
+
+    function place(animate = true) {
+      if (!track) return;
+      track.classList.toggle('no-anim', !animate);
+      track.style.transform = `translateX(${-pos * step()}px)`;
+      syncChrome();
+    }
+
+    function settle() {
+      if (pos < lead || pos >= lead + count) {
+        pos = lead + logical();
+        place(false);
       }
     }
 
-    prev?.addEventListener('click', () => show(active - 1));
-    next?.addEventListener('click', () => show(active + 1));
-    dots.forEach((d, di) => d.addEventListener('click', () => show(di)));
-    show(0);
+    function advance(dir, animate = true) {
+      if (!alive()) return;
+      pos += dir;
+      place(animate);
+      clearTimeout(advance._t);
+      advance._t = setTimeout(() => {
+        if (alive()) settle();
+      }, 650);
+    }
+
+    let startX = null;
+    let baseX = 0;
+    let dragging = false;
+    let movedX = 0;
+    let lastX = 0;
+    let samples = [];
+    let glideId = null;
+    let suppressClick = false;
+    let captured = false;
+    const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function stopGlide() {
+      if (glideId) cancelAnimationFrame(glideId);
+      glideId = null;
+    }
+    function holdRest() {
+      stopGlide();
+      track?.classList.remove('no-anim');
+      track?.classList.remove('dragging');
+      syncChrome();
+      restart();
+    }
+    function flickVelocity() {
+      const now = performance.now();
+      const recent = samples.filter((s) => now - s.t < 120);
+      if (recent.length < 2) return 0;
+      const a = recent[0];
+      const b = recent[recent.length - 1];
+      const dt = b.t - a.t;
+      if (dt <= 0) return 0;
+      return ((b.x - a.x) / dt) * 0.9;
+    }
+    function startGlide(v0) {
+      stopGlide();
+      const st = step();
+      if (!st || !track) {
+        holdRest();
+        return;
+      }
+      let v = Math.max(-8, Math.min(8, v0));
+      let x = lastX;
+      let last = performance.now();
+      const span = count * st;
+      const lo = -(lead + count) * st;
+      const hi = -lead * st;
+      const frame = (now) => {
+        if (!alive()) {
+          glideId = null;
+          return;
+        }
+        const dt = Math.min(50, now - last);
+        last = now;
+        v *= Math.pow(0.95, dt / 16.7);
+        x += v * dt;
+        while (x < lo) x += span;
+        while (x > hi) x -= span;
+        pos = Math.round(-x / st);
+        track.style.transform = `translateX(${x}px)`;
+        lastX = x;
+        if (Math.abs(v) > 0.08) {
+          glideId = requestAnimationFrame(frame);
+        } else {
+          glideId = null;
+          holdRest();
+        }
+      };
+      glideId = requestAnimationFrame(frame);
+    }
+    viewport?.addEventListener('pointerdown', (e) => {
+      if (!alive()) return;
+      startX = e.clientX;
+      dragging = true;
+      movedX = 0;
+      captured = false;
+      samples = [{ x: e.clientX, t: performance.now() }];
+      stopGlide();
+      measure();
+      baseX = lastX;
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    });
+    viewport?.addEventListener('pointermove', (e) => {
+      if (!alive() || !dragging || startX === null || !track) return;
+      const dx = e.clientX - startX;
+      movedX = dx;
+      if (!captured && Math.abs(dx) <= 5) return;
+      if (!captured) {
+        captured = true;
+        track?.classList.add('no-anim');
+        track?.classList.add('dragging');
+        try {
+          viewport.setPointerCapture?.(e.pointerId);
+        } catch {
+          /* ignore */
+        }
+      }
+      samples.push({ x: e.clientX, t: performance.now() });
+      if (samples.length > 8) samples.shift();
+      const st = step();
+      if (!st) return;
+      const span = count * st;
+      let x = baseX + dx * 0.9;
+      const lo = -(lead + count) * st;
+      const hi = -lead * st;
+      while (x < lo) x += span;
+      while (x > hi) x -= span;
+      pos = Math.round(-x / st);
+      lastX = x;
+      track.style.transform = `translateX(${x}px)`;
+    });
+    function endDrag(e) {
+      if (!alive() || !dragging || startX === null) return;
+      dragging = false;
+      startX = null;
+      if (captured) {
+        captured = false;
+        try {
+          if (viewport?.hasPointerCapture?.(e.pointerId)) viewport.releasePointerCapture(e.pointerId);
+        } catch {
+          /* ignore */
+        }
+      } else {
+        suppressClick = false;
+        restart();
+        return;
+      }
+      suppressClick = Math.abs(movedX) > 10;
+      const v = flickVelocity();
+      if (Math.abs(v) > 0.25 && !reduceMotion()) {
+        startGlide(v);
+      } else {
+        holdRest();
+      }
+    }
+    viewport?.addEventListener('pointerup', endDrag);
+    viewport?.addEventListener('pointercancel', endDrag);
+    viewport?.addEventListener(
+      'click',
+      (e) => {
+        if (suppressClick) {
+          e.preventDefault();
+          e.stopPropagation();
+          suppressClick = false;
+        }
+      },
+      true,
+    );
+
+    dots.forEach((d, di) => d.addEventListener('click', () => {
+      pos = lead + di;
+      place();
+      restart();
+    }));
+
+    let timer = null;
+    function restart() {
+      if (!alive() || reduceMotion()) return;
+      if (timer) clearInterval(timer);
+      timer = setInterval(() => {
+        if (!alive()) {
+          clearInterval(timer);
+          timer = null;
+          return;
+        }
+        advance(1);
+      }, 4000);
+    }
+    root.addEventListener('mouseenter', () => {
+      if (timer) clearInterval(timer);
+      timer = null;
+    });
+    root.addEventListener('mouseleave', restart);
+    root.addEventListener('focusin', () => {
+      if (timer) clearInterval(timer);
+      timer = null;
+    });
+    root.addEventListener('focusout', restart);
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      if (!alive()) return;
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (!alive()) return;
+        measure();
+        place(false);
+        lastX = -pos * step();
+      }, 200);
+    });
+
+    measure();
+    place(false);
+    lastX = -pos * step();
+    restart();
   });
+  }
+  initRound();
+  document.addEventListener('astro:page-load', initRound);
 </script>
 
 <style>
+  [data-carousel="round"] [data-track] {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [data-carousel="round"] [data-track].no-anim {
+    transition: none !important;
+  }
+  [data-carousel="round"] [data-track].dragging img {
+    transform: none !important;
+  }
   @media (prefers-reduced-motion: reduce) {
-    [data-carousel="round"] [data-slide] {
+    [data-carousel="round"] [data-track] {
       transition: none !important;
     }
   }
