@@ -16,35 +16,24 @@ const ctaBase =
 const ctaPrimary = `${ctaBase} bg-accent text-white hover:bg-accent-hover`;
 const ctaOutline = `${ctaBase} border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-white`;
 
-// Foam silhouette: circles centred on the edges of the white body.
-// x/y = centre (% of the box), s = diameter and d = nudge off the edge (both cqw,
-// so the shape scales with the box; negative d pushes outward).
-const foam = [
-  // top edge
-  { x: 5, y: 0, s: 10, d: 1.5 }, { x: 15, y: 0, s: 15, d: 0 }, { x: 27, y: 0, s: 11, d: 1 },
-  { x: 39, y: 0, s: 17, d: -1 }, { x: 52, y: 0, s: 12, d: 1.5 }, { x: 64, y: 0, s: 19, d: -1.5 },
-  { x: 77, y: 0, s: 12, d: 1 }, { x: 88, y: 0, s: 15, d: 0 }, { x: 97, y: 0, s: 9, d: 2 },
-  // bottom edge
-  { x: 4, y: 100, s: 9, d: -1.5 }, { x: 14, y: 100, s: 13, d: 0 }, { x: 26, y: 100, s: 10, d: -1 },
-  { x: 38, y: 100, s: 15, d: 1 }, { x: 51, y: 100, s: 11, d: -1 }, { x: 63, y: 100, s: 16, d: 1 },
-  { x: 76, y: 100, s: 10, d: -1 }, { x: 87, y: 100, s: 14, d: 0 }, { x: 97, y: 100, s: 9, d: -1.5 },
-  // sides
-  { x: 0, y: 32, s: 13, d: 1 }, { x: 0, y: 66, s: 11, d: 1.5 },
-  { x: 100, y: 38, s: 12, d: -1.5 }, { x: 100, y: 70, s: 14, d: -1 },
-];
-const bubbleStyle = (b: { x: number; y: number; s: number; d: number }) => {
-  const dx = b.x === 0 ? b.d : b.x === 100 ? -b.d : 0;
-  const dy = b.y === 0 ? b.d : b.y === 100 ? -b.d : 0;
-  return `left:calc(${b.x}% + ${dx}cqw);top:calc(${b.y}% + ${dy}cqw);width:${b.s}cqw;`;
-};
-// Loose bubbles drifting around the foam (positions relative to the foam box).
+// Foam band: full-width white band whose top edge is a row of overlapping
+// bubbles; bottom and sides stay flat. x = centre (% of width), s = diameter
+// and d = how far the centre sits below the edge (rem, scaled by --foam-scale).
+const sizes = [8, 12, 7, 13, 9, 14, 8, 11, 6.5, 12.5, 10, 8];
+const nudges = [1.5, 2.5, 1, 3, 2, 3.5, 1.5, 2.5, 1, 3, 2, 1.5];
+const foam = Array.from({ length: 19 }, (_, i) => ({
+  x: -3 + i * 6,
+  s: sizes[i % sizes.length],
+  d: nudges[i % nudges.length],
+}));
+// Loose bubbles floating just above the crest (left/top relative to the band).
 const loose = [
-  { l: '-3%', t: '-6%', s: 3.2, d: 0 },
-  { l: '2%', t: '-16%', s: 1.6, d: 1.2 },
-  { l: '96%', t: '-14%', s: 2.6, d: 0.6 },
-  { l: '101%', t: '-2%', s: 1.4, d: 1.8 },
-  { l: '-4%', t: '88%', s: 1.8, d: 2.4 },
-  { l: '98%', t: '92%', s: 2.2, d: 0.9 },
+  { l: '9%', t: '-7rem', s: 2.6, d: 0 },
+  { l: '14%', t: '-9.5rem', s: 1.3, d: 1.2 },
+  { l: '31%', t: '-6rem', s: 1.6, d: 2.1 },
+  { l: '72%', t: '-7.5rem', s: 2.2, d: 0.6 },
+  { l: '86%', t: '-9rem', s: 3, d: 1.8 },
+  { l: '92%', t: '-5.5rem', s: 1.4, d: 2.7 },
 ];
 ---
 
@@ -58,33 +47,33 @@ const loose = [
     </p>
   </div>
 
-  <div class="relative z-10 mx-auto mt-12 w-full max-w-3xl px-6 sm:mt-24 sm:px-12">
-    <div class="foam relative">
-      <!-- White silhouette: rounded body + edge bubbles, one shared drop shadow -->
-      <div class="foam-shape" aria-hidden="true">
-        <span class="foam-body"></span>
-        {foam.map((b) => <span class="foam-bubble" style={bubbleStyle(b)}></span>)}
-      </div>
-      {loose.map((b) => (
-        <span
-          class="foam-loose"
-          aria-hidden="true"
-          style={`left:${b.l};top:${b.t};width:${b.s}rem;animation-delay:-${b.d}s;`}
-        ></span>
+  <div class="foam relative z-10 mt-20 w-full sm:mt-36">
+    <!-- White silhouette: flat band + bubbly crest along the top -->
+    <div class="foam-shape" aria-hidden="true">
+      <span class="foam-body"></span>
+      {foam.map((b) => (
+        <span class="foam-bubble" style={`left:${b.x}%;top:calc(${b.d}rem * var(--foam-scale));width:calc(${b.s}rem * var(--foam-scale));`}></span>
       ))}
+    </div>
+    {loose.map((b) => (
+      <span
+        class="foam-loose"
+        aria-hidden="true"
+        style={`left:${b.l};top:calc(${b.t} * var(--foam-scale));width:${b.s}rem;animation-delay:-${b.d}s;`}
+      ></span>
+    ))}
 
-      <div class="relative px-2 py-4 text-center sm:px-8 sm:py-6">
-        <div class="hidden sm:block">
-          <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">Get Started</span>
-          <h2 class="mt-2 text-4xl font-bold tracking-tight text-ink">Let's Work Together</h2>
-          <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-muted">
-            One request away from spotless — tell us about the job and get a detailed estimate within hours.
-          </p>
-        </div>
-        <div class="grid grid-cols-2 gap-3 sm:mt-7 sm:flex sm:justify-center">
-          <a href={link('/quote/')} class={ctaPrimary}>Get a Free Quote</a>
-          <a href={link('/contact/')} class={ctaOutline}>Contact Us</a>
-        </div>
+    <div class="relative mx-auto max-w-3xl px-4 pb-8 pt-2 text-center sm:px-8 sm:pb-14">
+      <div class="hidden sm:block">
+        <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">Get Started</span>
+        <h2 class="mt-2 text-4xl font-bold tracking-tight text-ink">Let's Work Together</h2>
+        <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-muted">
+          One request away from spotless — tell us about the job and get a detailed estimate within hours.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-3 sm:mt-7 sm:flex sm:justify-center">
+        <a href={link('/quote/')} class={ctaPrimary}>Get a Free Quote</a>
+        <a href={link('/contact/')} class={ctaOutline}>Contact Us</a>
       </div>
     </div>
   </div>
@@ -96,14 +85,22 @@ const loose = [
 
 <style>
   .foam {
-    container-type: inline-size;
+    --foam-scale: 0.6;
+    /* Edge bubbles run past the sides and, on small screens, the bottom: clip both
+       so the sides and bottom stay flat, leaving room above for the crest. */
+    clip-path: inset(-20rem 0 0 0);
   }
-  /* The shape is one silhouette: drop-shadow traces the union of body + bubbles. */
+  @media (min-width: 640px) {
+    .foam {
+      --foam-scale: 1;
+    }
+  }
+  /* One silhouette: the soft shadow traces the bubbly crest only. */
   .foam-shape {
-    pointer-events: none; /* bubbles overhang the strip; let drags through */
+    pointer-events: none;
     position: absolute;
     inset: 0;
-    filter: drop-shadow(0 10px 18px rgb(35 39 44 / 0.12)) drop-shadow(0 2px 4px rgb(35 39 44 / 0.06));
+    filter: drop-shadow(0 -6px 14px rgb(35 39 44 / 0.08));
   }
   .foam-body,
   .foam-bubble {
@@ -112,7 +109,6 @@ const loose = [
   }
   .foam-body {
     inset: 0;
-    border-radius: 2.5rem;
   }
   .foam-bubble {
     aspect-ratio: 1;
@@ -135,7 +131,7 @@ const loose = [
     50% { transform: translateY(-8px); }
   }
   @media (max-width: 639px) {
-    .foam-loose:nth-child(n + 4) {
+    .foam-loose {
       display: none;
     }
   }
