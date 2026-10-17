@@ -58,7 +58,7 @@ const loose = [
     </p>
   </div>
 
-  <div class="mx-auto mt-12 w-full max-w-3xl px-6 sm:mt-24 sm:px-12">
+  <div class="relative z-10 mx-auto mt-12 w-full max-w-3xl px-6 sm:mt-24 sm:px-12">
     <div class="foam relative">
       <!-- White silhouette: rounded body + edge bubbles, one shared drop shadow -->
       <div class="foam-shape" aria-hidden="true">
@@ -89,7 +89,7 @@ const loose = [
     </div>
   </div>
 
-  <div class="mt-8 sm:mt-16">
+  <div class="relative z-0 -mt-6">
     <ServicesCarousel />
   </div>
 </section>
@@ -100,6 +100,7 @@ const loose = [
   }
   /* The shape is one silhouette: drop-shadow traces the union of body + bubbles. */
   .foam-shape {
+    pointer-events: none; /* bubbles overhang the strip; let drags through */
     position: absolute;
     inset: 0;
     filter: drop-shadow(0 10px 18px rgb(35 39 44 / 0.12)) drop-shadow(0 2px 4px rgb(35 39 44 / 0.06));
