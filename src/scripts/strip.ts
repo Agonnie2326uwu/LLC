@@ -1,7 +1,8 @@
 // Shared engine for the infinite drag strips (ServicesCarousel, RoundCarousel).
 //
 // Markup contract (all hooks are data-* attributes inside the root):
-//   root            data-count="N" (real slides), data-autoplay="ms" (0/absent = off)
+//   root            data-count="N" (real slides), data-autoplay="ms" (0/absent = off),
+//                   data-drift="px/s" (continuous slow scroll; takes precedence over autoplay)
 //   [data-viewport] clipping box; [data-track] flex row of the real [data-slide]s
 //   optional        [data-prev] [data-next] [data-toggle] [data-dot="i"] [data-status]
 //                   [data-js-only] (rendered .invisible, revealed once the engine runs)
@@ -55,7 +56,8 @@ function mount(root: HTMLElement): Teardown {
   const count = Number(root.dataset.count) || real.length;
   if (count < 1 || real.length < count) return () => {};
 
-  const interval = Number(root.dataset.autoplay) || 0;
+  const drift = Number(root.dataset.drift) || 0;
+  const interval = drift ? 0 : Number(root.dataset.autoplay) || 0;
   const prevBtn = root.querySelector<HTMLButtonElement>('[data-prev]');
   const nextBtn = root.querySelector<HTMLButtonElement>('[data-next]');
   const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]');
@@ -432,14 +434,64 @@ function mount(root: HTMLElement): Teardown {
   );
 
   // ---- Autoplay ---------------------------------------------------------------
-  let playing = interval > 0 && !reduceMotion();
+  let playing = (interval > 0 || drift > 0) && !reduceMotion();
   let inView = true;
   let hovering = false;
   let timer = 0;
 
+  // Drift: a continuous slow scroll. Interactions pause it briefly instead of for good.
+  const DRIFT_HOLD = 4000; // ms to wait after a deliberate interaction
+  const DRIFT_RESUME = 900; // ms to wait after any other pause (hover, tap, snap)
+  let driftId = 0;
+  let resumeTimer = 0;
+  let holdUntil = 0;
+
+  function stopDrift() {
+    if (driftId) cancelAnimationFrame(driftId);
+    driftId = 0;
+  }
+
+  function startDrift() {
+    resumeTimer = 0;
+    if (!step) return;
+    rebase();
+    let x = xOf(pos);
+    let last = performance.now();
+    let shown = current();
+    const frame = (now: number) => {
+      const dt = Math.min(50, now - last);
+      last = now;
+      x = drawWrapped(x - (drift * dt) / 1000);
+      const li = current();
+      if (li !== shown) {
+        shown = li;
+        syncChrome(false);
+      }
+      driftId = requestAnimationFrame(frame);
+    };
+    driftId = requestAnimationFrame(frame);
+  }
+
+  function syncDrift(run: boolean) {
+    const wait = holdUntil - performance.now();
+    if (!run || wait > 0) stopDrift();
+    if (!run) {
+      clearTimeout(resumeTimer);
+      resumeTimer = 0;
+      return;
+    }
+    if (driftId) return;
+    clearTimeout(resumeTimer);
+    resumeTimer = window.setTimeout(startDrift, Math.max(wait, DRIFT_RESUME));
+  }
+
   function syncAutoplay() {
     const run =
       playing && inView && !document.hidden && !hovering && !focusInSlides && !dragging && !reduceMotion();
+    if (drift) {
+      syncDrift(run && !glideId);
+      return;
+    }
     if (run && !timer) {
       timer = window.setInterval(() => move((t) => Math.round(t) + 1, false), interval);
     } else if (!run && timer) {
@@ -450,14 +502,17 @@ function mount(root: HTMLElement): Teardown {
 
   function syncToggle() {
     if (!toggle) return;
-    toggle.hidden = !interval || reduceMotion();
+    toggle.hidden = (!interval && !drift) || reduceMotion();
     toggle.setAttribute('aria-label', playing ? 'Pause automatic slide show' : 'Play automatic slide show');
     toggle.dataset.state = playing ? 'playing' : 'paused';
   }
 
-  /** Any deliberate navigation stops autoplay for good (until Play is pressed). */
+  /** Any deliberate navigation stops autoplay for good (until Play is pressed);
+   *  drift only pauses for DRIFT_HOLD. */
   function interaction() {
-    if (playing) {
+    if (drift) {
+      holdUntil = performance.now() + DRIFT_HOLD;
+    } else if (playing) {
       playing = false;
       syncToggle();
     }
@@ -554,6 +609,8 @@ function mount(root: HTMLElement): Teardown {
     ac.abort();
     clearInterval(timer);
     clearTimeout(settleTimer);
+    clearTimeout(resumeTimer);
+    stopDrift();
     stopGlide();
     cancelAnimationFrame(resizeRaf);
     if (hasIdle) window.cancelIdleCallback(idleHandle);
