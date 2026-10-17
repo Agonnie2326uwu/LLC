@@ -27,9 +27,8 @@
 }
 
 /* Base */
-html {
-  scroll-behavior: smooth;
-}
+/* No native smooth scrolling: Lenis smooths wheel + same-page anchors, and the
+   page-transition router must jump to the top instantly. */
 body {
   font-family: var(--font-sans);
   color: var(--color-ink);

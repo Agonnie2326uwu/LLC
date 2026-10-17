@@ -6,6 +6,7 @@ import '@fontsource/baloo-2/500.css';
 import '@fontsource/baloo-2/600.css';
 import '@fontsource/baloo-2/700.css';
 import '@fontsource/baloo-2/800.css';
+import 'lenis/dist/lenis.css';
 import { SITE_NAME } from '../lib/site';
 
 interface Props {
@@ -105,6 +106,48 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'htt
       }
       initReveal();
       document.addEventListener('astro:page-load', initReveal);
+    </script>
+    <script>
+      // Lenis smooth wheel scrolling. Recreated per page so it always measures the
+      // swapped-in document; skipped entirely under prefers-reduced-motion.
+      import Lenis from 'lenis';
+
+      let lenis: Lenis | null = null;
+      const root = document.documentElement;
+      const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      // The fullscreen menu locks scroll with a class on <html>; mirror it in Lenis.
+      const lockObserver = new MutationObserver(() => {
+        if (!lenis) return;
+        if (root.classList.contains('menu-scroll-lock')) lenis.stop();
+        else lenis.start();
+      });
+      lockObserver.observe(root, { attributes: true, attributeFilter: ['class'] });
+
+      function navOffset() {
+        const nav = parseFloat(getComputedStyle(root).getPropertyValue('--nav-height')) || 72;
+        return -(nav + 16);
+      }
+
+      function destroyLenis() {
+        lenis?.destroy();
+        lenis = null;
+      }
+
+      function initLenis() {
+        destroyLenis();
+        if (motion.matches) return;
+        lenis = new Lenis({
+          autoRaf: true,
+          lerp: 0.1,
+          anchors: { offset: navOffset() },
+        });
+        if (root.classList.contains('menu-scroll-lock')) lenis.stop();
+      }
+
+      document.addEventListener('astro:page-load', initLenis);
+      document.addEventListener('astro:before-swap', destroyLenis);
+      motion.addEventListener('change', initLenis);
     </script>
     <noscript>
       <style>
