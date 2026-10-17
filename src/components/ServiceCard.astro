@@ -16,6 +16,7 @@ const { title, href, imageSrc, imageAlt, flagship = false, delay = 0, center = f
 
 <article
   data-reveal
+  data-dark
   style={`transition-delay: ${delay}ms`}
   class={`group relative flex-1 overflow-hidden rounded-2xl shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl ${center ? 'min-h-[24rem] md:min-h-[30rem]' : 'min-h-[20rem] md:min-h-[24rem] md:mt-14'} ${flagship ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg-alt' : ''}`}
 >

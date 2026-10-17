@@ -53,6 +53,7 @@ const swaps = [
 ---
 
 <BaseLayout
+  noindex
   title="Design System | Luxury Duo Cleaning LLC"
   description="Internal style tile and component gallery for the Luxury Duo Cleaning marketing site. Not linked in navigation."
 >
@@ -108,9 +109,11 @@ const swaps = [
       <div class="mt-6 flex flex-col gap-6 rounded-xl border border-line bg-white p-8">
         <div class="flex flex-wrap gap-4">
           <Button href={link('/quote/')} variant="primary" size="md">Primary</Button>
-          <Button href={link('/quote/')} variant="secondary" size="md">Secondary</Button>
           <Button href={link('/quote/')} variant="outline" size="md">Outline</Button>
-          <Button href={link('/quote/')} variant="dark" size="md">Dark</Button>
+        </div>
+        <div class="flex flex-wrap gap-4 rounded-lg bg-primary p-6" data-dark>
+          <Button href={link('/quote/')} variant="light" size="md">Light</Button>
+          <Button href={link('/quote/')} variant="outline-light" size="md">Outline Light</Button>
         </div>
         <div class="flex flex-wrap items-center gap-4">
           <Button href={link('/quote/')} variant="primary" size="sm">Small</Button>

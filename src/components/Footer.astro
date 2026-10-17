@@ -9,11 +9,19 @@ const services = [
   { anchor: '#movein', label: 'Move-In / Move-Out' },
   { anchor: '#deep', label: 'Deep Cleaning' },
 ];
+
+const company = [
+  { path: '/', label: 'Home' },
+  { path: '/about/', label: 'About Us' },
+  { path: '/services/', label: 'All Services' },
+  { path: '/quote/', label: 'Get a Free Quote' },
+  { path: '/contact/', label: 'Contact Us' },
+];
 ---
 
 <footer class="bg-footer text-white">
   <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-    <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-16">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_0.8fr_1.2fr] lg:gap-12">
       <div>
         <div class="flex items-center gap-2.5">
           <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-white font-bold text-primary">LD</span>
@@ -25,7 +33,7 @@ const services = [
       </div>
 
       <nav aria-label="Services">
-        <h3 class="text-sm font-bold uppercase tracking-[0.12em] text-white/60">Services</h3>
+        <h3 class="text-sm font-bold uppercase tracking-[0.12em] text-white/70">Services</h3>
         <ul class="mt-4 space-y-2.5">
           {services.map((s) => (
             <li>
@@ -37,8 +45,21 @@ const services = [
         </ul>
       </nav>
 
+      <nav aria-label="Company">
+        <h3 class="text-sm font-bold uppercase tracking-[0.12em] text-white/70">Company</h3>
+        <ul class="mt-4 space-y-2.5">
+          {company.map((c) => (
+            <li>
+              <a href={link(c.path)} class="text-sm text-white/85 hover:text-white hover:underline">
+                {c.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       <div>
-        <h3 class="text-sm font-bold uppercase tracking-[0.12em] text-white/60">Contact</h3>
+        <h3 class="text-sm font-bold uppercase tracking-[0.12em] text-white/70">Contact</h3>
         <ul class="mt-4 space-y-3 text-sm text-white/85">
           <li class="flex items-center gap-2.5">
             <svg class="h-4 w-4 shrink-0 text-silver" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -51,7 +72,7 @@ const services = [
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
               <polyline points="22,6 12,13 2,6" />
             </svg>
-            <a href={`mailto:${EMAIL}`} class="hover:text-white hover:underline">{EMAIL}</a>
+            <a href={`mailto:${EMAIL}`} class="break-all hover:text-white hover:underline">{EMAIL}</a>
           </li>
           <li class="flex items-center gap-2.5">
             <svg class="h-4 w-4 shrink-0 text-silver" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -65,8 +86,8 @@ const services = [
     </div>
 
     <div class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/15 pt-6 sm:flex-row">
-      <span class="text-sm text-white/60">&copy; 2026 {SITE_NAME}. All rights reserved.</span>
-      <a href={INSTAGRAM} aria-label="Instagram" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-white/80 ring-1 ring-white/20 hover:bg-white/10 hover:text-white">
+      <span class="text-sm text-white/70">&copy; 2026 {SITE_NAME}. All rights reserved.</span>
+      <a href={INSTAGRAM} aria-label="Instagram" class="inline-flex h-11 w-11 items-center justify-center rounded-full text-white/80 ring-1 ring-white/20 hover:bg-white/10 hover:text-white">
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
           <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />

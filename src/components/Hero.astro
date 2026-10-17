@@ -1,6 +1,5 @@
 ---
 import ServicesCarousel from './ServicesCarousel.astro';
-import Button from './Button.astro';
 import { link } from '../lib/site';
 
 interface Props {
@@ -9,33 +8,42 @@ interface Props {
 }
 
 const { title, subtitle } = Astro.props;
+
+// Shared CTA styles (mirrors Button.astro variants, but with responsive sizing:
+// compact on phones so the photo strip stays in the first screen).
+const ctaBase =
+  'inline-flex items-center justify-center rounded font-bold transition-colors px-4 py-3 text-base sm:px-10 sm:py-5 sm:text-xl';
+const ctaPrimary = `${ctaBase} bg-accent text-white hover:bg-accent-hover`;
+const ctaOutline = `${ctaBase} border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-white`;
 ---
 
-<section class="flex min-h-[100svh] flex-col bg-hero pt-10">
-  <div class="mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8" data-reveal>
-    <h1 class="mx-auto max-w-5xl text-5xl font-bold uppercase leading-[0.95] tracking-tight text-ink sm:text-7xl lg:text-8xl">
+<section class="flex flex-col bg-hero pt-6 sm:min-h-[100svh] sm:pt-10">
+  <div class="mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+    <h1 class="mx-auto max-w-5xl text-4xl font-bold uppercase leading-[0.95] tracking-tight text-ink sm:text-7xl lg:text-8xl">
       {title}
     </h1>
-    <p class="mt-4 text-xs font-bold uppercase tracking-[0.25em] text-muted sm:text-sm">
+    <p class="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-ink/75 sm:mt-4 sm:text-sm sm:tracking-[0.25em]">
       {subtitle}
     </p>
   </div>
 
-  <div class="mx-auto mt-10 w-full max-w-3xl px-4 sm:px-6" data-reveal>
-    <div class="rounded-2xl border border-line bg-[#fffdf8] p-6 text-center shadow-sm sm:p-8">
-      <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">Get Started</span>
-      <h2 class="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">Let's Work Together</h2>
-      <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-muted">
-        One request away from spotless — tell us about the job and get a detailed estimate within hours.
-      </p>
-      <div class="mt-6 flex flex-col justify-center gap-3 border-t border-line pt-6 sm:flex-row">
-        <Button href={link('/quote/')} variant="primary" size="lg">Request a Free Quote</Button>
-        <Button href={link('/contact/')} variant="outline" size="lg">Get in Touch</Button>
+  <div class="mx-auto mt-5 w-full max-w-3xl px-4 sm:mt-10 sm:px-6">
+    <div class="sm:rounded-2xl sm:border sm:border-line sm:bg-[#fffdf8] sm:p-8 sm:text-center sm:shadow-sm">
+      <div class="hidden sm:block">
+        <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">Get Started</span>
+        <h2 class="mt-2 text-4xl font-bold tracking-tight text-ink">Let's Work Together</h2>
+        <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-muted">
+          One request away from spotless — tell us about the job and get a detailed estimate within hours.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-3 sm:mt-6 sm:flex sm:justify-center sm:border-t sm:border-line sm:pt-6">
+        <a href={link('/quote/')} class={ctaPrimary}>Get a Free Quote</a>
+        <a href={link('/contact/')} class={ctaOutline}>Contact Us</a>
       </div>
     </div>
   </div>
 
-  <div class="mt-10">
+  <div class="mt-2 sm:mt-10">
     <ServicesCarousel />
   </div>
 </section>

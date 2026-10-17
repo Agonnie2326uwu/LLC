@@ -3,21 +3,23 @@ import Button from './Button.astro';
 
 interface Props {
   title: string;
+  lead?: string;
   primaryHref: string;
-  primaryLabel: string;
+  primaryLabel?: string;
   secondaryHref: string;
   secondaryLabel: string;
 }
 
-const { title, primaryHref, primaryLabel, secondaryHref, secondaryLabel } = Astro.props;
+const { title, lead, primaryHref, primaryLabel = 'Get a Free Quote', secondaryHref, secondaryLabel } = Astro.props;
 ---
 
-<section class="bg-footer">
+<section class="bg-footer" data-dark>
   <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6" data-reveal>
     <h2 class="text-4xl font-bold tracking-tight text-white sm:text-5xl">{title}</h2>
+    {lead && <p class="mx-auto mt-4 max-w-2xl text-lg text-silver-light">{lead}</p>}
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button href={primaryHref} variant="primary">{primaryLabel}</Button>
-      <Button href={secondaryHref} variant="secondary">{secondaryLabel}</Button>
+      <Button href={primaryHref} variant="light">{primaryLabel}</Button>
+      <Button href={secondaryHref} variant="outline-light">{secondaryLabel}</Button>
     </div>
   </div>
 </section>

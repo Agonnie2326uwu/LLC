@@ -10,7 +10,7 @@ const { quote, name, role, initials } = Astro.props;
 const stars = [0, 1, 2, 3, 4];
 ---
 
-<figure data-reveal class="flex flex-col gap-4 rounded-xl border border-line bg-white p-6 shadow-sm">
+<figure class="flex h-full flex-col gap-4 rounded-2xl border border-line bg-white p-6 shadow-sm">
   <div class="flex gap-1" role="img" aria-label="Rated 5 out of 5 stars">
     {stars.map(() => (
       <svg viewBox="0 0 24 24" class="h-5 w-5 fill-star" aria-hidden="true">
