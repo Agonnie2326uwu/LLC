@@ -12,9 +12,40 @@ const { title, subtitle } = Astro.props;
 // Shared CTA styles (mirrors Button.astro variants, but with responsive sizing:
 // compact on phones so the photo strip stays in the first screen).
 const ctaBase =
-  'inline-flex items-center justify-center rounded font-bold transition-colors px-4 py-3 text-base sm:px-10 sm:py-5 sm:text-xl';
+  'inline-flex items-center justify-center rounded font-bold whitespace-nowrap transition-colors px-2 py-3 text-[15px] sm:px-10 sm:py-5 sm:text-xl';
 const ctaPrimary = `${ctaBase} bg-accent text-white hover:bg-accent-hover`;
 const ctaOutline = `${ctaBase} border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-white`;
+
+// Foam silhouette: circles centred on the edges of the white body.
+// x/y = centre (% of the box), s = diameter and d = nudge off the edge (both cqw,
+// so the shape scales with the box; negative d pushes outward).
+const foam = [
+  // top edge
+  { x: 5, y: 0, s: 10, d: 1.5 }, { x: 15, y: 0, s: 15, d: 0 }, { x: 27, y: 0, s: 11, d: 1 },
+  { x: 39, y: 0, s: 17, d: -1 }, { x: 52, y: 0, s: 12, d: 1.5 }, { x: 64, y: 0, s: 19, d: -1.5 },
+  { x: 77, y: 0, s: 12, d: 1 }, { x: 88, y: 0, s: 15, d: 0 }, { x: 97, y: 0, s: 9, d: 2 },
+  // bottom edge
+  { x: 4, y: 100, s: 9, d: -1.5 }, { x: 14, y: 100, s: 13, d: 0 }, { x: 26, y: 100, s: 10, d: -1 },
+  { x: 38, y: 100, s: 15, d: 1 }, { x: 51, y: 100, s: 11, d: -1 }, { x: 63, y: 100, s: 16, d: 1 },
+  { x: 76, y: 100, s: 10, d: -1 }, { x: 87, y: 100, s: 14, d: 0 }, { x: 97, y: 100, s: 9, d: -1.5 },
+  // sides
+  { x: 0, y: 32, s: 13, d: 1 }, { x: 0, y: 66, s: 11, d: 1.5 },
+  { x: 100, y: 38, s: 12, d: -1.5 }, { x: 100, y: 70, s: 14, d: -1 },
+];
+const bubbleStyle = (b: { x: number; y: number; s: number; d: number }) => {
+  const dx = b.x === 0 ? b.d : b.x === 100 ? -b.d : 0;
+  const dy = b.y === 0 ? b.d : b.y === 100 ? -b.d : 0;
+  return `left:calc(${b.x}% + ${dx}cqw);top:calc(${b.y}% + ${dy}cqw);width:${b.s}cqw;`;
+};
+// Loose bubbles drifting around the foam (positions relative to the foam box).
+const loose = [
+  { l: '-3%', t: '-6%', s: 3.2, d: 0 },
+  { l: '2%', t: '-16%', s: 1.6, d: 1.2 },
+  { l: '96%', t: '-14%', s: 2.6, d: 0.6 },
+  { l: '101%', t: '-2%', s: 1.4, d: 1.8 },
+  { l: '-4%', t: '88%', s: 1.8, d: 2.4 },
+  { l: '98%', t: '92%', s: 2.2, d: 0.9 },
+];
 ---
 
 <section class="flex flex-col bg-hero pt-6 sm:min-h-[100svh] sm:pt-10">
@@ -27,23 +58,89 @@ const ctaOutline = `${ctaBase} border-2 border-primary bg-transparent text-prima
     </p>
   </div>
 
-  <div class="mx-auto mt-5 w-full max-w-3xl px-4 sm:mt-10 sm:px-6">
-    <div class="sm:rounded-2xl sm:border sm:border-line sm:bg-[#fffdf8] sm:p-8 sm:text-center sm:shadow-sm">
-      <div class="hidden sm:block">
-        <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">Get Started</span>
-        <h2 class="mt-2 text-4xl font-bold tracking-tight text-ink">Let's Work Together</h2>
-        <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-muted">
-          One request away from spotless — tell us about the job and get a detailed estimate within hours.
-        </p>
+  <div class="mx-auto mt-12 w-full max-w-3xl px-6 sm:mt-24 sm:px-12">
+    <div class="foam relative">
+      <!-- White silhouette: rounded body + edge bubbles, one shared drop shadow -->
+      <div class="foam-shape" aria-hidden="true">
+        <span class="foam-body"></span>
+        {foam.map((b) => <span class="foam-bubble" style={bubbleStyle(b)}></span>)}
       </div>
-      <div class="grid grid-cols-2 gap-3 sm:mt-6 sm:flex sm:justify-center sm:border-t sm:border-line sm:pt-6">
-        <a href={link('/quote/')} class={ctaPrimary}>Get a Free Quote</a>
-        <a href={link('/contact/')} class={ctaOutline}>Contact Us</a>
+      {loose.map((b) => (
+        <span
+          class="foam-loose"
+          aria-hidden="true"
+          style={`left:${b.l};top:${b.t};width:${b.s}rem;animation-delay:-${b.d}s;`}
+        ></span>
+      ))}
+
+      <div class="relative px-2 py-4 text-center sm:px-8 sm:py-6">
+        <div class="hidden sm:block">
+          <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">Get Started</span>
+          <h2 class="mt-2 text-4xl font-bold tracking-tight text-ink">Let's Work Together</h2>
+          <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-muted">
+            One request away from spotless — tell us about the job and get a detailed estimate within hours.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-3 sm:mt-7 sm:flex sm:justify-center">
+          <a href={link('/quote/')} class={ctaPrimary}>Get a Free Quote</a>
+          <a href={link('/contact/')} class={ctaOutline}>Contact Us</a>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="mt-2 sm:mt-10">
+  <div class="mt-8 sm:mt-16">
     <ServicesCarousel />
   </div>
 </section>
+
+<style>
+  .foam {
+    container-type: inline-size;
+  }
+  /* The shape is one silhouette: drop-shadow traces the union of body + bubbles. */
+  .foam-shape {
+    position: absolute;
+    inset: 0;
+    filter: drop-shadow(0 10px 18px rgb(35 39 44 / 0.12)) drop-shadow(0 2px 4px rgb(35 39 44 / 0.06));
+  }
+  .foam-body,
+  .foam-bubble {
+    position: absolute;
+    background: #fffdf8;
+  }
+  .foam-body {
+    inset: 0;
+    border-radius: 2.5rem;
+  }
+  .foam-bubble {
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    transform: translate(-50%, -50%);
+  }
+  /* Loose soap bubbles: glassy rim with a highlight, bobbing gently. */
+  .foam-loose {
+    position: absolute;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 32% 30%, rgb(255 255 255 / 0.95) 0 14%, rgb(255 255 255 / 0.35) 34%, rgb(255 255 255 / 0.12) 64%);
+    border: 1.5px solid rgb(255 255 255 / 0.85);
+    box-shadow: 0 2px 6px rgb(35 39 44 / 0.08);
+    animation: foam-bob 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes foam-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @media (max-width: 639px) {
+    .foam-loose:nth-child(n + 4) {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .foam-loose {
+      animation: none;
+    }
+  }
+</style>
