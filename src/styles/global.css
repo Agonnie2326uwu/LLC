@@ -11,8 +11,11 @@
   --color-bg: #f7f2e7;
   --color-bg-alt: #d4bba9;
   --color-ink: #26292e;
-  --color-muted: #6d6a61;
-  --color-line: #ddd0b8;
+  /* muted: 4.68:1 on tan bg-alt/hero #d4bba9, 7.67:1 on cream bg, 8.56:1 on white */
+  --color-muted: #4f4c45;
+  --color-line: #ddd0b8; /* decorative dividers/card edges only */
+  /* form field borders: 3.59:1 on white, 3.22:1 on cream (WCAG 1.4.11) */
+  --color-field: #8f8677;
   --color-footer: #23272c;
   --color-star: #d9a441;
   --color-hero: #d4bba9;
@@ -24,9 +27,8 @@
 }
 
 /* Base */
-html {
-  scroll-behavior: smooth;
-}
+/* No native smooth scrolling: Lenis smooths wheel + same-page anchors, and the
+   page-transition router must jump to the top instantly. */
 body {
   font-family: var(--font-sans);
   color: var(--color-ink);
@@ -73,29 +75,19 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   [data-reveal] { opacity: 1; transform: none; transition: none; }
-  .acc-panel { transition: none; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
-/* Accordion smooth open (Why Choose) */
-.acc-panel {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-details[open] .acc-panel {
-  grid-template-rows: 1fr;
-}
-.acc-panel > div {
-  overflow: hidden;
-  min-height: 0;
-}
-.no-anim .acc-panel {
-  transition: none !important;
-}
-
-/* Focus visibility */
+/* Focus visibility — two-tone ring.
+   Light surfaces: charcoal outline (10.6:1 on cream, 6.5:1 on tan) with a white
+   halo filling the offset gap. Dark surfaces (footer, menu overlay, CtaBand,
+   page hero, photo cards): cream outline (13.5:1 on #23272c) with a dark halo. */
 :focus-visible {
   outline: 3px solid var(--color-accent);
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff;
+}
+:where(.bg-footer, .bg-primary, [data-dark]) :focus-visible {
+  outline-color: var(--color-bg);
+  box-shadow: 0 0 0 2px var(--color-footer);
 }

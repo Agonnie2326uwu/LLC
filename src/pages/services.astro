@@ -29,17 +29,12 @@ const base = import.meta.env.BASE_URL;
     const flip = i % 2 === 1;
     const isFlagship = service.slug === FLAG;
     return (
-      <section id={service.slug} class:list={['scroll-mt-24', i % 2 === 1 ? 'bg-bg-alt' : 'bg-white']}>
+      <section id={service.slug} class:list={['scroll-mt-[calc(var(--nav-height)+1.5rem)]', i % 2 === 1 ? 'bg-bg-alt' : 'bg-white']}>
         <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
           <div class="grid items-center gap-10 lg:grid-cols-2">
             <div data-reveal class={flip ? 'lg:order-2' : ''}>
               {isFlagship && (
                 <span class="text-xs font-bold uppercase tracking-[0.15em] text-accent">Flagship Service</span>
-              )}
-              {isFlagship && (
-                <div class="mt-2">
-                  <span class="draft-pill">Before/after pair slot reserved</span>
-                </div>
               )}
               <h2 class="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{service.title}</h2>
               <p class="mt-4 text-lg leading-relaxed text-muted">{service.desc}</p>
@@ -54,7 +49,7 @@ const base = import.meta.env.BASE_URL;
                 ))}
               </ul>
               <div class="mt-6">
-                <Button href={`${link('/quote/')}?service=${service.slug}`} variant="primary" size="sm">Get a Quote</Button>
+                <Button href={`${link('/quote/')}?service=${service.slug}`} variant="primary" size="sm">Get a Free Quote</Button>
               </div>
             </div>
             <div data-reveal={flip ? 'left' : 'right'} class={flip ? 'lg:order-1' : ''}>
@@ -64,6 +59,7 @@ const base = import.meta.env.BASE_URL;
                 alt={service.imageAlt}
                 aspect="4/3"
                 eager={i === 0}
+                sizes="(min-width: 1280px) 600px, (min-width: 1024px) calc(50vw - 52px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
               />
             </div>
           </div>
@@ -102,9 +98,9 @@ const base = import.meta.env.BASE_URL;
   <CtaBand
     title="Not Sure Which Service You Need?"
     primaryHref={link('/quote/')}
-    primaryLabel="Request a Free Quote"
+    primaryLabel="Get a Free Quote"
     secondaryHref={link('/contact/')}
-    secondaryLabel="Talk to Us"
+    secondaryLabel="Contact Us"
   />
 
   <Footer slot="footer" />

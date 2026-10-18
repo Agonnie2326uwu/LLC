@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import Button from './Button.astro';
 import { link, PHONE_DISPLAY, PHONE_HREF, EMAIL } from '../lib/site';
 
 const current = Astro.url.pathname;
@@ -17,16 +18,16 @@ const links = [
   { path: '/services/', label: 'Services' },
   { path: '/contact/', label: 'Contact' },
 ];
-const sideLinks = [
-  { href: link('/quote/'), label: 'Get a Free Quote' },
-  { href: PHONE_HREF, label: PHONE_DISPLAY },
-  { href: `mailto:${EMAIL}`, label: EMAIL },
+const quoteLink = { href: link('/quote/'), label: 'Get a Free Quote' };
+const contactLinks = [
+  { href: PHONE_HREF, label: PHONE_DISPLAY, kind: 'Call' },
+  { href: `mailto:${EMAIL}`, label: EMAIL, kind: 'Email' },
 ];
 ---
 
-<header>
+<header id="site-header" class="site-header sticky top-0 z-50">
   <nav class="mx-auto flex h-[var(--nav-height)] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-    <div class="ml-4 sm:ml-6">
+    <div id="site-logo" class="site-logo ml-4 sm:ml-6">
       <Logo />
     </div>
 
@@ -48,11 +49,16 @@ const sideLinks = [
 
 <div
   id="menu-overlay"
-  class="fixed inset-0 z-40 flex flex-col justify-center bg-footer text-white"
+  data-lenis-prevent
+  class="fixed inset-0 z-40 flex flex-col overflow-y-auto bg-footer text-white"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Site menu"
+  data-dark
   hidden
 >
   <div id="menu-bubbles" class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true"></div>
-  <nav class="relative mx-auto w-full max-w-7xl px-6 sm:px-10" aria-label="Fullscreen menu">
+  <nav class="relative mx-auto my-auto w-full max-w-7xl px-6 py-24 sm:px-10" aria-label="Fullscreen menu">
     <ul class="flex flex-col gap-1 sm:gap-2">
       {links.map((l, i) => (
         <li class="menu-item" style={`--d:${120 + i * 80}ms`}>
@@ -66,15 +72,24 @@ const sideLinks = [
         </li>
       ))}
     </ul>
-    <ul class="mt-10 flex flex-col gap-2 sm:mt-14">
-      {sideLinks.map((l, i) => (
-        <li class="menu-item" style={`--d:${440 + i * 80}ms`}>
-          <a href={l.href} class="text-lg font-semibold text-white/70 transition-colors hover:text-white">
-            {l.label}
-          </a>
-        </li>
-      ))}
-    </ul>
+    <div class="mt-10 flex flex-col items-start gap-4 sm:mt-14 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8">
+      <div class="menu-item" style="--d:440ms">
+        <Button href={quoteLink.href} variant="light" size="lg">{quoteLink.label}</Button>
+      </div>
+      <ul class="flex flex-col gap-1 sm:flex-row sm:gap-x-8">
+        {contactLinks.map((l, i) => (
+          <li class="menu-item" style={`--d:${520 + i * 80}ms`}>
+            <a
+              href={l.href}
+              aria-label={`${l.kind}: ${l.label}`}
+              class="inline-flex min-h-11 items-center text-lg font-semibold text-white/85 underline-offset-4 transition-colors hover:text-white hover:underline"
+            >
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   </nav>
 </div>
 
@@ -84,32 +99,93 @@ const sideLinks = [
   if (!window.__menuNavInit) {
     window.__menuNavInit = true;
 
+    const CLOSE_MS = 550;
     const getBtn = () => document.getElementById('menu-btn');
     const getOverlay = () => document.getElementById('menu-overlay');
+    const getHeader = () => document.getElementById('site-header');
+    const isOpen = () => getBtn()?.getAttribute('aria-expanded') === 'true';
+    let hideTimer = null;
 
-    function setOpen(open) {
+    // ---- Header "scrolled" state ----
+    let scrollTicking = false;
+    function updateScrolled() {
+      scrollTicking = false;
+      const header = getHeader();
+      if (header) header.toggleAttribute('data-scrolled', window.scrollY > 8);
+    }
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!scrollTicking) {
+          scrollTicking = true;
+          requestAnimationFrame(updateScrolled);
+        }
+      },
+      { passive: true }
+    );
+
+    // ---- Modal helpers ----
+    function setBackgroundInert(on) {
+      document.querySelectorAll('#main, footer, #site-logo').forEach((el) => {
+        if (on) el.setAttribute('inert', '');
+        else el.removeAttribute('inert');
+      });
+    }
+    function focusables() {
+      const overlay = getOverlay();
+      const links = overlay ? Array.from(overlay.querySelectorAll('a[href]')) : [];
+      const btn = getBtn();
+      return btn ? [btn, ...links] : links;
+    }
+    function setOriginFromButton() {
       const btn = getBtn();
       const overlay = getOverlay();
+      if (!btn || !overlay) return;
+      const r = btn.getBoundingClientRect();
+      overlay.style.setProperty('--menu-x', `${r.left + r.width / 2}px`);
+      overlay.style.setProperty('--menu-y', `${r.top + r.height / 2}px`);
+    }
+
+    function setOpen(open, { returnFocus = true } = {}) {
+      const btn = getBtn();
+      const overlay = getOverlay();
+      const header = getHeader();
       if (!btn || !overlay) return;
       btn.setAttribute('aria-expanded', String(open));
       btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       btn.dataset.open = open ? 'true' : 'false';
+      header?.toggleAttribute('data-menu-open', open);
+      if (hideTimer) {
+        clearTimeout(hideTimer);
+        hideTimer = null;
+      }
       if (open) {
+        setOriginFromButton();
         overlay.removeAttribute('hidden');
-        requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('open')));
-        document.body.style.overflow = 'hidden';
+        document.documentElement.classList.add('menu-scroll-lock');
+        setBackgroundInert(true);
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            overlay.classList.add('open');
+            overlay.querySelector('a[href]')?.focus({ preventScroll: true });
+          })
+        );
         startBubbles();
       } else {
         overlay.classList.remove('open');
-        document.body.style.overflow = '';
+        document.documentElement.classList.remove('menu-scroll-lock');
+        setBackgroundInert(false);
         stopBubbles();
-        setTimeout(() => {
+        if (returnFocus) btn.focus({ preventScroll: true });
+        hideTimer = setTimeout(() => {
+          hideTimer = null;
           const current = getOverlay();
           if (current && !current.classList.contains('open')) current.setAttribute('hidden', '');
-        }, 450);
+        }, CLOSE_MS + 50);
       }
     }
 
+    // ---- Floating bubbles inside the overlay ----
     let bubbleTimer = null;
     function stopBubbles() {
       if (bubbleTimer) {
@@ -128,8 +204,10 @@ const sideLinks = [
       b.style.bottom = 'auto';
       b.style.animation = 'none';
       void b.offsetWidth;
+      b.style.animation = '';
       b.classList.add('popped');
       b.addEventListener('animationend', () => b.remove(), { once: true });
+      setTimeout(() => b.remove(), 400);
     }
     function startBubbles() {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -139,16 +217,20 @@ const sideLinks = [
       const spawn = () => {
         if (layer.childElementCount >= 24) return;
         const b = document.createElement('span');
+        b.className = 'menu-float-bubble';
         const size = 8 + Math.random() * 34;
+        const dur = 6 + Math.random() * 6;
         b.style.width = `${size}px`;
         b.style.height = `${size}px`;
         b.style.left = `${Math.random() * 100}%`;
-        b.style.animationDuration = `${6 + Math.random() * 6}s`;
+        b.style.animationDuration = `${dur}s`;
         b.addEventListener('pointerenter', () => popBubbleEl(b));
         b.addEventListener('click', () => popBubbleEl(b));
         b.addEventListener('animationend', () => {
           if (!b.dataset.popped) b.remove();
         });
+        // Fallback: never leave orphans if animationend doesn't fire.
+        setTimeout(() => b.remove(), dur * 1000 + 1000);
         layer.appendChild(b);
       };
       spawn();
@@ -156,17 +238,19 @@ const sideLinks = [
       bubbleTimer = setInterval(spawn, 550);
     }
 
+    // ---- Click ripple from the menu button ----
     function popBubble(btn) {
       const rect = btn.getBoundingClientRect();
       const bubble = document.createElement('span');
-      bubble.className = 'menu-bubble';
+      bubble.className = 'menu-btn-burst';
       const size = Math.max(rect.width, rect.height) * 2.6;
       bubble.style.width = `${size}px`;
       bubble.style.height = `${size}px`;
       bubble.style.left = `${rect.left + rect.width / 2}px`;
       bubble.style.top = `${rect.top + rect.height / 2}px`;
       document.body.appendChild(bubble);
-      bubble.addEventListener('animationend', () => bubble.remove());
+      bubble.addEventListener('animationend', () => bubble.remove(), { once: true });
+      setTimeout(() => bubble.remove(), 900);
     }
 
     document.addEventListener('click', (e) => {
@@ -175,17 +259,39 @@ const sideLinks = [
       const btn = target.closest('#menu-btn');
       if (btn) {
         popBubble(btn);
-        setOpen(btn.getAttribute('aria-expanded') !== 'true');
+        setOpen(!isOpen());
         return;
       }
-      if (target.closest('#menu-overlay a')) setOpen(false);
+      if (target.closest('#menu-overlay a') && isOpen()) setOpen(false);
     });
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && getBtn()?.getAttribute('aria-expanded') === 'true') setOpen(false);
+      if (!isOpen()) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const items = focusables();
+      if (!items.length) return;
+      const idx = items.indexOf(document.activeElement);
+      e.preventDefault();
+      let next;
+      if (idx === -1) next = e.shiftKey ? items.length - 1 : 1 % items.length;
+      else next = (idx + (e.shiftKey ? -1 : 1) + items.length) % items.length;
+      items[next].focus();
     });
-    // Never land on a new page with scroll locked or a stale open menu.
-    document.addEventListener('astro:page-load', () => {
-      document.body.style.overflow = '';
+
+    function resetMenu() {
+      if (hideTimer) {
+        clearTimeout(hideTimer);
+        hideTimer = null;
+      }
+      stopBubbles();
+      document.documentElement.classList.remove('menu-scroll-lock');
+      setBackgroundInert(false);
+      getHeader()?.removeAttribute('data-menu-open');
       const overlay = getOverlay();
       if (overlay) {
         overlay.classList.remove('open');
@@ -197,15 +303,26 @@ const sideLinks = [
         btn.setAttribute('aria-label', 'Open menu');
         btn.dataset.open = 'false';
       }
+    }
+    // Clean up before the old page is swapped out, and never land on a new
+    // page with scroll locked or a stale open menu.
+    document.addEventListener('astro:before-swap', resetMenu);
+    document.addEventListener('astro:page-load', () => {
+      resetMenu();
+      updateScrolled();
     });
   }
 </script>
 
-<style>
-  #menu-overlay[hidden] {
-    display: none;
+<style is:global>
+  /* Global: these nodes are created in JS, so scoped selectors never match. */
+  html {
+    scrollbar-gutter: stable;
   }
-  #menu-bubbles span {
+  html.menu-scroll-lock {
+    overflow: hidden;
+  }
+  #menu-bubbles .menu-float-bubble {
     position: absolute;
     bottom: -70px;
     border-radius: 9999px;
@@ -213,23 +330,88 @@ const sideLinks = [
     border: 1px solid rgba(255, 255, 255, 0.28);
     pointer-events: auto;
     cursor: pointer;
-    animation-name: bubble-rise;
+    animation-name: menu-bubble-rise;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
   }
-  @keyframes bubble-rise {
+  @keyframes menu-bubble-rise {
     to {
       transform: translateY(-115vh);
     }
   }
-  #menu-bubbles span.popped {
-    animation: bubble-pop 0.22s ease-out forwards;
+  #menu-bubbles .menu-float-bubble.popped {
+    animation: menu-bubble-pop 0.22s ease-out forwards;
   }
-  @keyframes bubble-pop {
+  @keyframes menu-bubble-pop {
     to {
       transform: scale(1.9);
       opacity: 0;
     }
+  }
+  .menu-btn-burst {
+    position: fixed;
+    z-index: 60;
+    border-radius: 9999px;
+    background: var(--color-accent);
+    opacity: 0.35;
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+    animation: menu-btn-burst 0.7s ease-out forwards;
+  }
+  @keyframes menu-btn-burst {
+    to {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #menu-bubbles .menu-float-bubble,
+    .menu-btn-burst {
+      animation: none !important;
+      display: none;
+    }
+  }
+</style>
+
+<style>
+  /* ---- Sticky header ---- */
+  .site-header {
+    transition:
+      background-color 0.3s ease,
+      box-shadow 0.3s ease,
+      backdrop-filter 0.3s ease;
+  }
+  .site-header[data-scrolled]:not([data-menu-open]) {
+    background-color: rgb(247 242 231 / 0.88);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 1px 0 rgb(38 41 46 / 0.08), 0 8px 24px -12px rgb(38 41 46 / 0.25);
+  }
+  /* Pull the (overhanging) menu button into the bar once scrolled. */
+  #menu-btn {
+    transition:
+      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      scale 0.15s ease;
+  }
+  .site-header[data-scrolled] #menu-btn {
+    transform: translateY(-12px) scale(0.85);
+  }
+  /* While the menu is open the overlay sits under the header: let it show. */
+  .site-header[data-menu-open] {
+    pointer-events: none;
+  }
+  .site-header[data-menu-open] #menu-btn {
+    pointer-events: auto;
+  }
+  .site-logo {
+    transition: opacity 0.3s ease;
+  }
+  .site-header[data-menu-open] .site-logo {
+    opacity: 0;
+  }
+
+  #menu-overlay[hidden] {
+    display: none;
   }
   #menu-overlay .menu-link-label {
     display: inline-block;
@@ -270,22 +452,6 @@ const sideLinks = [
     transform: rotate(-18deg);
     pointer-events: none;
   }
-  .menu-bubble {
-    position: fixed;
-    z-index: 60;
-    border-radius: 9999px;
-    background: var(--color-accent);
-    opacity: 0.35;
-    transform: translate(-50%, -50%) scale(0);
-    pointer-events: none;
-    animation: bubble-pop 0.7s ease-out forwards;
-  }
-  @keyframes bubble-pop {
-    to {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 0;
-    }
-  }
   #menu-btn[data-open="true"] {
     border-color: rgba(38, 41, 46, 0.35);
   }
@@ -298,14 +464,40 @@ const sideLinks = [
     top: 50%;
     transform: translateY(-50%) rotate(-45deg);
   }
+
+  /* ---- Overlay reveal: circle grows from the menu button ---- */
   #menu-overlay {
-    clip-path: circle(0px at calc(100% - 3.5rem) 3.5rem);
-    transition: clip-path 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Fallbacks match the button centre; JS sets exact values on open. */
+    --menu-x: calc(100% - 3rem);
+    --menu-y: 3rem;
+    clip-path: circle(0px at var(--menu-x) var(--menu-y));
     visibility: hidden;
+    transition:
+      clip-path 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 0.55s;
+  }
+  @media (min-width: 640px) {
+    #menu-overlay {
+      --menu-x: calc(100% - 4rem);
+    }
+  }
+  @media (min-width: 1024px) {
+    #menu-overlay {
+      --menu-x: calc(100% - 4.5rem);
+    }
+  }
+  @media (min-width: 1280px) {
+    #menu-overlay {
+      /* Button is pinned to the right edge of the 80rem container. */
+      --menu-x: calc(50% + 40rem - 4.5rem);
+    }
   }
   #menu-overlay.open {
-    clip-path: circle(150% at calc(100% - 3.5rem) 3.5rem);
+    clip-path: circle(150% at var(--menu-x) var(--menu-y));
     visibility: visible;
+    transition:
+      clip-path 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 0s;
   }
   #menu-overlay .menu-item {
     opacity: 0;
@@ -321,10 +513,11 @@ const sideLinks = [
     transition-delay: var(--d, 0ms);
   }
   @media (prefers-reduced-motion: reduce) {
+    .site-header,
+    #menu-btn,
     #menu-overlay,
     #menu-overlay .menu-item,
     #menu-overlay .menu-link-label::after,
-    #menu-bubbles span,
     #menu-btn .menu-line {
       transition: none !important;
       animation: none !important;

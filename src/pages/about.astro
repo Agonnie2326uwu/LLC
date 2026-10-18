@@ -7,6 +7,12 @@ import PageHero from '../components/PageHero.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import Stat from '../components/Stat.astro';
 import RoundCarousel from '../components/RoundCarousel.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { link, PHONE_HREF } from '../lib/site';
+
+import { Picture } from 'astro:assets';
+import whyUs from '../assets/images/why-us.jpg';
+import { widthSet, PICTURE_FORMATS } from '../lib/images';
 
 const base = import.meta.env.BASE_URL;
 ---
@@ -28,19 +34,20 @@ const base = import.meta.env.BASE_URL;
       <div data-reveal>
         <h2 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Our Mission</h2>
         <p class="mt-4 text-lg leading-relaxed text-muted">
-          To secure contracts, become a recognized name in the Orlando market,
-          and leave a mark through quality work. We're not here to be the
-          biggest — we're here to be the most reliable.
+          To give every client a space that's truly clean — on schedule, to
+          spec, and without the follow-up calls. Whether it's a job site
+          before handover or your home before guests arrive, you should be
+          able to count on us to get it right the first time.
         </p>
         <p class="mt-4 leading-relaxed text-muted">
-          Every job we take is a chance to prove that a cleaning company can
-          operate with the same precision and professionalism as the
-          contractors and businesses it serves.
+          That means clear quotes, crews that show up when promised, and the
+          same precision and professionalism you expect from the contractors
+          and businesses you already trust.
         </p>
       </div>
       <div class="grid grid-cols-1 gap-8 rounded-xl border border-line bg-bg-alt p-10 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3" data-reveal="right">
         <Stat value="100%" label="Licensed & Insured" />
-        <Stat value="24hr" label="Quote Turnaround" />
+        <Stat value="Same-day" label="Quote Turnaround" />
         <Stat value="Orlando" label="Serving All Areas" />
       </div>
     </div>
@@ -106,19 +113,31 @@ const base = import.meta.env.BASE_URL;
           </p>
         </div>
         <figure data-reveal="right" class="group overflow-hidden rounded-xl border border-line shadow-sm">
-          <img
-            src={`${base}images/why-us.jpg`}
+          <Picture
+            src={whyUs}
             alt="Two-person Luxury Duo Cleaning crew wiping down a table in Orlando FL"
+            formats={[...PICTURE_FORMATS]}
+            fallbackFormat="jpg"
+            widths={widthSet(whyUs, [400])}
+            sizes="(min-width: 1280px) 560px, (min-width: 1024px) 45vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
             loading="lazy"
             decoding="async"
-            width="626"
-            height="417"
             class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            pictureAttributes={{ class: 'contents' }}
           />
         </figure>
       </div>
     </div>
   </section>
+
+  <CtaBand
+    title="Ready for a Cleaner Space?"
+    lead="Tell us about your property and we'll send a detailed estimate within hours."
+    primaryHref={link('/quote/')}
+    primaryLabel="Get a Free Quote"
+    secondaryHref={PHONE_HREF}
+    secondaryLabel="Call Now"
+  />
 
   <Footer slot="footer" />
 </BaseLayout>

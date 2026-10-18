@@ -1,26 +1,42 @@
 ---
+/**
+ * Button variants
+ * - primary:       solid charcoal, white text (11.8:1) — main CTA on light surfaces
+ * - outline:       charcoal 2px border on transparent — secondary CTA on light surfaces
+ * - light:         solid cream, ink text (12.1:1) — main CTA on dark surfaces
+ * - outline-light: cream 2px border, white text — secondary CTA on dark surfaces
+ * - secondary:     alias of `light` (kept for existing call sites)
+ * - dark:          deprecated alias of `primary` (was visually identical) — prefer primary
+ * All sizes are >= 44px tall; radius is rounded-lg everywhere.
+ */
 interface Props {
   href: string;
-  variant?: 'primary' | 'secondary' | 'outline' | 'dark';
+  variant?: 'primary' | 'outline' | 'light' | 'outline-light' | 'secondary' | 'dark';
   size?: 'lg' | 'md' | 'sm';
   block?: boolean;
+  class?: string;
 }
 
-const { href, variant = 'primary', size = 'md', block = false } = Astro.props;
+const { href, variant = 'primary', size = 'md', block = false, class: extra = '' } = Astro.props;
 
-const base = 'inline-flex items-center justify-center rounded font-bold transition-colors';
+const base =
+  'inline-flex items-center justify-center gap-2 rounded-lg border-2 font-bold text-center transition-colors';
+const light = 'border-silver-light bg-silver-light text-ink hover:border-white hover:bg-white';
+const outlineLight = 'border-silver-light bg-transparent text-white hover:bg-silver-light hover:text-ink';
 const variants: Record<string, string> = {
-  primary: 'bg-accent text-white hover:bg-accent-hover',
-  secondary: 'bg-white text-primary hover:bg-silver-light',
-  outline: 'border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-white',
-  dark: 'bg-primary text-white hover:bg-primary-light',
+  primary: 'border-primary bg-primary text-white hover:border-accent-hover hover:bg-accent-hover',
+  outline: 'border-primary bg-transparent text-primary hover:bg-primary hover:text-white',
+  light,
+  'outline-light': outlineLight,
+  secondary: light,
 };
 const sizes: Record<string, string> = {
-  lg: 'px-10 py-5 text-xl',
-  md: 'px-6 py-3 text-base',
-  sm: 'px-4 py-2 text-sm',
+  lg: 'min-h-14 px-8 py-3 text-lg',
+  md: 'min-h-12 px-6 py-2.5 text-base',
+  sm: 'min-h-11 px-5 py-2 text-sm',
 };
-const classes = [base, variants[variant], sizes[size], block ? 'w-full' : ''].join(' ');
+const resolved = variant === 'dark' ? 'primary' : variant;
+const classes = [base, variants[resolved] ?? variants.primary, sizes[size], block ? 'w-full' : '', extra].join(' ');
 ---
 
 <a href={href} class={classes}>

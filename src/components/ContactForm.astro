@@ -1,13 +1,13 @@
 ---
 /* ContactForm — STUB mode (no network). Real Formspree wired post-signoff. */
 const inputCls =
-  'w-full rounded-lg border border-line bg-white px-4 py-3 text-ink placeholder:text-muted/60 focus:border-accent focus:outline-none';
+  'block w-full min-h-12 rounded-lg border border-field bg-white px-4 py-3 text-base text-ink placeholder:text-muted hover:border-muted focus:border-primary';
 const labelCls = 'mb-1 block text-sm font-semibold text-ink';
 const errorCls = 'mt-1 text-sm text-red-600';
 ---
 
 <div data-reveal data-form-wrap="contact">
-  <form id="contact-form" novalidate class="flex flex-col gap-5">
+  <form id="contact-form" method="post" novalidate class="flex flex-col gap-5">
     <div>
       <label class={labelCls} for="contact-name">Name *</label>
       <input
@@ -88,7 +88,7 @@ const errorCls = 'mt-1 text-sm text-red-600';
 
     <button
       type="submit"
-      class="w-full rounded-lg bg-primary px-6 py-3 text-center font-semibold text-white transition hover:bg-primary-light"
+      class="min-h-12 w-full rounded-lg border-2 border-primary bg-primary px-6 py-3 text-center font-bold text-white transition-colors hover:border-accent-hover hover:bg-accent-hover"
     >
       Send Message
     </button>
@@ -97,7 +97,7 @@ const errorCls = 'mt-1 text-sm text-red-600';
     </p>
   </form>
 
-  <div id="contact-success" hidden class="rounded-xl border border-line bg-bg-alt p-8 text-center" role="status">
+  <div id="contact-success" hidden tabindex="-1" class="rounded-xl border border-line bg-bg-alt p-8 text-center" role="status">
     <h3 class="text-2xl font-bold text-ink">Thanks — message received!</h3>
     <p class="mx-auto mt-2 max-w-md text-muted">
       Preview mode — not sending. Real Formspree wired post-signoff.
@@ -106,9 +106,10 @@ const errorCls = 'mt-1 text-sm text-red-600';
 </div>
 
 <script>
-  (function () {
+  function initContact() {
     const form = document.getElementById('contact-form');
-    if (!form) return;
+    if (!form || form.dataset.bound === 'true') return;
+    form.dataset.bound = 'true';
     const wrap = form.closest('[data-form-wrap="contact"]');
     const success = wrap ? wrap.querySelector('#contact-success') : document.getElementById('contact-success');
 
@@ -119,7 +120,7 @@ const errorCls = 'mt-1 text-sm text-red-600';
       if (!input) return;
       const err = document.getElementById(input.id + '-error');
       input.setAttribute('aria-invalid', hasError ? 'true' : 'false');
-      input.classList.toggle('border-red-500', hasError);
+      input.classList.toggle('border-red-600!', hasError);
       if (err) {
         if (hasError) err.removeAttribute('hidden');
         else err.setAttribute('hidden', '');
@@ -182,7 +183,10 @@ const errorCls = 'mt-1 text-sm text-red-600';
       if (success) {
         success.removeAttribute('hidden');
         success.scrollIntoView({ block: 'center' });
+        success.focus({ preventScroll: true });
       }
     });
-  })();
+  }
+  initContact();
+  document.addEventListener('astro:page-load', initContact);
 </script>

@@ -1,6 +1,5 @@
 ---
 import ServicesCarousel from './ServicesCarousel.astro';
-import Button from './Button.astro';
 import { link } from '../lib/site';
 
 interface Props {
@@ -9,33 +8,136 @@ interface Props {
 }
 
 const { title, subtitle } = Astro.props;
+
+// Shared CTA styles (mirrors Button.astro variants, but with responsive sizing:
+// compact on phones so the photo strip stays in the first screen).
+const ctaBase =
+  'inline-flex items-center justify-center rounded font-bold whitespace-nowrap transition-colors px-2 py-3 text-[15px] sm:px-10 sm:py-5 sm:text-xl';
+const ctaPrimary = `${ctaBase} bg-accent text-white hover:bg-accent-hover`;
+const ctaOutline = `${ctaBase} border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-white`;
+
+// Foam band: full-width white band whose top edge is a row of overlapping
+// bubbles; bottom and sides stay flat. x = centre (% of width), s = diameter
+// and d = how far the centre sits below the edge (rem, scaled by --foam-scale).
+const sizes = [8, 12, 7, 13, 9, 14, 8, 11, 6.5, 12.5, 10, 8];
+const nudges = [1.5, 2.5, 1, 3, 2, 3.5, 1.5, 2.5, 1, 3, 2, 1.5];
+const foam = Array.from({ length: 19 }, (_, i) => ({
+  x: -3 + i * 6,
+  s: sizes[i % sizes.length],
+  d: nudges[i % nudges.length],
+}));
+// Loose bubbles floating just above the crest (left/top relative to the band).
+const loose = [
+  { l: '9%', t: '-7rem', s: 2.6, d: 0 },
+  { l: '14%', t: '-9.5rem', s: 1.3, d: 1.2 },
+  { l: '31%', t: '-6rem', s: 1.6, d: 2.1 },
+  { l: '72%', t: '-7.5rem', s: 2.2, d: 0.6 },
+  { l: '86%', t: '-9rem', s: 3, d: 1.8 },
+  { l: '92%', t: '-5.5rem', s: 1.4, d: 2.7 },
+];
 ---
 
-<section class="flex min-h-[100svh] flex-col bg-hero pt-10">
-  <div class="mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8" data-reveal>
-    <h1 class="mx-auto max-w-5xl text-5xl font-bold uppercase leading-[0.95] tracking-tight text-ink sm:text-7xl lg:text-8xl">
+<section class="flex flex-col bg-hero pt-6 sm:min-h-[100svh] sm:pt-10">
+  <div class="mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+    <h1 class="mx-auto max-w-5xl text-4xl font-bold uppercase leading-[0.95] tracking-tight text-ink sm:text-7xl lg:text-8xl">
       {title}
     </h1>
-    <p class="mt-4 text-xs font-bold uppercase tracking-[0.25em] text-muted sm:text-sm">
+    <p class="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-ink/75 sm:mt-4 sm:text-sm sm:tracking-[0.25em]">
       {subtitle}
     </p>
   </div>
 
-  <div class="mx-auto mt-10 w-full max-w-3xl px-4 sm:px-6" data-reveal>
-    <div class="rounded-2xl border border-line bg-[#fffdf8] p-6 text-center shadow-sm sm:p-8">
-      <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">Get Started</span>
-      <h2 class="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">Let's Work Together</h2>
-      <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-muted">
-        One request away from spotless — tell us about the job and get a detailed estimate within hours.
-      </p>
-      <div class="mt-6 flex flex-col justify-center gap-3 border-t border-line pt-6 sm:flex-row">
-        <Button href={link('/quote/')} variant="primary" size="lg">Request a Free Quote</Button>
-        <Button href={link('/contact/')} variant="outline" size="lg">Get in Touch</Button>
+  <div class="foam relative z-10 mt-20 w-full sm:mt-36">
+    <!-- White silhouette: flat band + bubbly crest along the top -->
+    <div class="foam-shape" aria-hidden="true">
+      <span class="foam-body"></span>
+      {foam.map((b) => (
+        <span class="foam-bubble" style={`left:${b.x}%;top:calc(${b.d}rem * var(--foam-scale));width:calc(${b.s}rem * var(--foam-scale));`}></span>
+      ))}
+    </div>
+    {loose.map((b) => (
+      <span
+        class="foam-loose"
+        aria-hidden="true"
+        style={`left:${b.l};top:calc(${b.t} * var(--foam-scale));width:${b.s}rem;animation-delay:-${b.d}s;`}
+      ></span>
+    ))}
+
+    <div class="relative mx-auto max-w-3xl px-4 pb-8 pt-2 text-center sm:px-8 sm:pb-14">
+      <div class="hidden sm:block">
+        <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">Get Started</span>
+        <h2 class="mt-2 text-4xl font-bold tracking-tight text-ink">Let's Work Together</h2>
+        <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-muted">
+          One request away from spotless — tell us about the job and get a detailed estimate within hours.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-3 sm:mt-7 sm:flex sm:justify-center">
+        <a href={link('/quote/')} class={ctaPrimary}>Get a Free Quote</a>
+        <a href={link('/contact/')} class={ctaOutline}>Contact Us</a>
       </div>
     </div>
   </div>
 
-  <div class="mt-10">
+  <div class="relative z-0 -mt-6">
     <ServicesCarousel />
   </div>
 </section>
+
+<style>
+  .foam {
+    --foam-scale: 0.6;
+    /* Edge bubbles run past the sides and, on small screens, the bottom: clip both
+       so the sides and bottom stay flat, leaving room above for the crest. */
+    clip-path: inset(-20rem 0 0 0);
+  }
+  @media (min-width: 640px) {
+    .foam {
+      --foam-scale: 1;
+    }
+  }
+  /* One silhouette: the soft shadow traces the bubbly crest only. */
+  .foam-shape {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    filter: drop-shadow(0 -6px 14px rgb(35 39 44 / 0.08));
+  }
+  .foam-body,
+  .foam-bubble {
+    position: absolute;
+    background: #fffdf8;
+  }
+  .foam-body {
+    inset: 0;
+  }
+  .foam-bubble {
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    transform: translate(-50%, -50%);
+  }
+  /* Loose soap bubbles: glassy rim with a highlight, bobbing gently. */
+  .foam-loose {
+    position: absolute;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 32% 30%, rgb(255 255 255 / 0.95) 0 14%, rgb(255 255 255 / 0.35) 34%, rgb(255 255 255 / 0.12) 64%);
+    border: 1.5px solid rgb(255 255 255 / 0.85);
+    box-shadow: 0 2px 6px rgb(35 39 44 / 0.08);
+    animation: foam-bob 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes foam-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @media (max-width: 639px) {
+    .foam-loose {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .foam-loose {
+      animation: none;
+    }
+  }
+</style>

@@ -1,12 +1,22 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+// Self-hosted Baloo 2 (replaces render-blocking Google Fonts).
+// 500 is kept because body copy (weight 400) has always resolved to it.
+import '@fontsource/baloo-2/500.css';
+import '@fontsource/baloo-2/600.css';
+import '@fontsource/baloo-2/700.css';
+import '@fontsource/baloo-2/800.css';
+import 'lenis/dist/lenis.css';
+import { SITE_NAME } from '../lib/site';
 
 interface Props {
   title: string;
   description: string;
   canonical?: string;
+  /** Emit robots noindex and skip canonical (internal / error pages). */
+  noindex?: boolean;
 }
-const { title, description, canonical } = Astro.props;
+const { title, description, canonical, noindex = false } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'https://n3mo1101.github.io').toString();
 ---
@@ -18,18 +28,16 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'htt
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalUrl} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonicalUrl} />}
+    <meta name="theme-color" content="#f7f2e7" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta name="twitter:card" content="summary" />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <slot name="head" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
     <ClientRouter />
     <style>
       ::view-transition-old(root),
@@ -98,6 +106,48 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'htt
       }
       initReveal();
       document.addEventListener('astro:page-load', initReveal);
+    </script>
+    <script>
+      // Lenis smooth wheel scrolling. Recreated per page so it always measures the
+      // swapped-in document; skipped entirely under prefers-reduced-motion.
+      import Lenis from 'lenis';
+
+      let lenis: Lenis | null = null;
+      const root = document.documentElement;
+      const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      // The fullscreen menu locks scroll with a class on <html>; mirror it in Lenis.
+      const lockObserver = new MutationObserver(() => {
+        if (!lenis) return;
+        if (root.classList.contains('menu-scroll-lock')) lenis.stop();
+        else lenis.start();
+      });
+      lockObserver.observe(root, { attributes: true, attributeFilter: ['class'] });
+
+      function navOffset() {
+        const nav = parseFloat(getComputedStyle(root).getPropertyValue('--nav-height')) || 72;
+        return -(nav + 16);
+      }
+
+      function destroyLenis() {
+        lenis?.destroy();
+        lenis = null;
+      }
+
+      function initLenis() {
+        destroyLenis();
+        if (motion.matches) return;
+        lenis = new Lenis({
+          autoRaf: true,
+          lerp: 0.1,
+          anchors: { offset: navOffset() },
+        });
+        if (root.classList.contains('menu-scroll-lock')) lenis.stop();
+      }
+
+      document.addEventListener('astro:page-load', initLenis);
+      document.addEventListener('astro:before-swap', destroyLenis);
+      motion.addEventListener('change', initLenis);
     </script>
     <noscript>
       <style>

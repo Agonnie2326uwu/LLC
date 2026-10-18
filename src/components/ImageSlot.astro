@@ -1,25 +1,80 @@
 ---
+import { Picture } from 'astro:assets';
+import { resolveImage, cropSet, PICTURE_FORMATS } from '../lib/images.ts';
+
+/**
+ * ImageSlot — renders a real photo cleanly. The dashed "DRAFT PHOTO" treatment
+ * (and slot-id label) only appears when the image is a draft/missing:
+ * pass `draft`, leave `src` empty, or use a src containing "draft"/"placeholder".
+ * Real photos that exist in src/assets/images are served through astro:assets
+ * (AVIF/WebP, responsive srcset, cropped to `aspect`); anything else is a plain <img>.
+ */
 interface Props {
   slotId: string;
-  src: string;
+  src?: string;
   alt: string;
   aspect?: '16/9' | '4/3' | '1/1';
   eager?: boolean;
+  draft?: boolean;
+  /** `sizes` hint for the responsive srcset (optimised images only). */
+  sizes?: string;
 }
 
-const { slotId, src, alt, aspect = '16/9', eager = false } = Astro.props;
+const { slotId, src = '', alt, aspect = '16/9', eager = false, draft, sizes = '100vw' } = Astro.props;
+const isDraft = draft ?? (!src || /(^|[\/_-])(draft|placeholder)/i.test(src));
+const meta = isDraft ? undefined : resolveImage(src);
+const [aw, ah] = aspect.split('/').map(Number);
+const crop = meta ? cropSet(meta, aw / ah, [480, 720, 960, 1200]) : undefined;
 ---
 
-<div class="draft-slot w-full" style={`aspect-ratio: ${aspect}`}>
-  <img
-    src={src}
-    alt={alt}
-    loading={eager ? 'eager' : 'lazy'}
-    decoding="async"
-    class="absolute inset-0 h-full w-full object-cover"
-  />
-  <span class="draft-pill absolute left-3 top-3">DRAFT PHOTO</span>
-  <span class="absolute bottom-3 left-3 rounded-md bg-black/65 px-2.5 py-1 font-mono text-xs text-white">
-    {slotId}
-  </span>
-</div>
+{isDraft ? (
+  <div class="draft-slot w-full bg-silver-light" style={`aspect-ratio: ${aspect}`} data-slot={slotId}>
+    {src && (
+      <img
+        src={src}
+        alt={alt}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+    )}
+    <span class="draft-pill absolute left-3 top-3">DRAFT PHOTO</span>
+    <span class="absolute bottom-3 left-3 rounded-md bg-black/65 px-2.5 py-1 font-mono text-xs text-white">
+      {slotId}
+    </span>
+  </div>
+) : (
+  <div
+    class="relative w-full overflow-hidden rounded-[var(--radius-card)] shadow-sm"
+    style={`aspect-ratio: ${aspect}`}
+    data-slot={slotId}
+  >
+    {meta && crop ? (
+      <Picture
+        src={meta}
+        alt={alt}
+        formats={[...PICTURE_FORMATS]}
+        fallbackFormat="jpg"
+        width={crop.width}
+        height={crop.height}
+        widths={crop.widths}
+        sizes={sizes}
+        fit="cover"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : undefined}
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover"
+        pictureAttributes={{ class: 'contents' }}
+      />
+    ) : (
+      <img
+        src={src}
+        alt={alt}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : undefined}
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+    )}
+  </div>
+)}
